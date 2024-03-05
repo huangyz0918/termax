@@ -4,9 +4,9 @@ Termll is an LLM agent in your terminal,
 
 With termll, you can
 
-- :baby: Ask commands: ask your terminal to help you do something, even if you don't know the command or a set of commands.
-- :triangular_ruler: Tailor commands: tailor and debug the commands to make them work on your devices, even if you just copied them from Stackoverflow.
-- :bulb: Smart hint: guess what you wanna do in the next?
+- 🍼 Ask Commands: simply ask your terminal for help with commands, no need to know them in advance.
+- 📐 Tailor Commands: easily customize and fix commands for your devices, even those copied from Stack Overflow.
+- 💡 Smart Hint: intelligent suggestions for your next steps.
 
 ## Installation
 
