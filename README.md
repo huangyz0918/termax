@@ -1,6 +1,6 @@
 # Termll
 
-Termll is an LLM agent in your terminal, 
+Termll is an LLM agent in your terminal to make your life easier.
 
 With termll, you can
 
