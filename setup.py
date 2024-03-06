@@ -6,7 +6,7 @@ from os import path
 from io import open  # for Python 2 and 3 compatibility
 
 # get __version__ from _version.py
-ver_file = path.join('termll', 'version.py')
+ver_file = path.join('termax', 'version.py')
 with open(ver_file) as f:
     exec(f.read())
 
@@ -24,7 +24,7 @@ with open(path.join(this_directory, 'requirements.txt'), encoding='utf-8') as f:
     requirements = f.read().splitlines()
 
 setup(
-    name='termll',
+    name='termax',
     version=__version__,
     description='Boost your terminal\'s intelligence with LLM: intuitive command assistance,'
                 ' seamless customization, and predictive next steps at your fingertips.',
@@ -32,14 +32,14 @@ setup(
     long_description_content_type='text/markdown',
     author='Yizheng Huang',
     author_email='huangyz0918@gmail.com',
-    url='https://github.com/huangyz0918/termll',
-    download_url='https://github.com/huangyz0918/termll/archive/refs/heads/main.zip',
+    url='https://github.com/huangyz0918/termax',
+    download_url='https://github.com/huangyz0918/termax/archive/refs/heads/main.zip',
     keywords=['LLM', 'deep learning', 'MLOps', 'shell', 'neural networks', 'command line', 'terminal', 'autocomplete'],
     packages=find_packages(),
     entry_points={
         "console_scripts": [
-            "termll=termll.cli:cli",
-            "t=termll.cli:cli",
+            "termax=termax.cli:cli",
+            "t=termax.cli:cli",
         ]
     },
     include_package_data=True,

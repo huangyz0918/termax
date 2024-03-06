@@ -1,7 +1,7 @@
 Closes #
 
 <!-- 
-Thank you for contributing to Termll!
+Thank you for contributing to Termax!
 -->
 
 #### What has been done to verify that this works as intended?
@@ -12,10 +12,10 @@ Thank you for contributing to Termll!
 
 #### Do we need any specific form for testing your changes? If so, please attach one.
 
-#### Does this change require updates to documentation? If so, please file an issue [here](https://github.com/huangyz0918/termll/issues/new) and include the link below.
+#### Does this change require updates to documentation? If so, please file an issue [here](https://github.com/huangyz0918/termax/issues/new) and include the link below.
 
 #### Before submitting this PR, please make sure you have:
 
 - [ ] confirmed all checks still pass OR confirm CI build passes.
 - [ ] verified that any code or assets from external sources are properly credited in comments and/or in
-  the [credit file](https://github.com/huangyz0918/Termll/blob/master/.github/OPEN_SOURCE_LICENSES.md).
+  the [credit file](https://github.com/huangyz0918/termax/blob/main/.github/OPEN_SOURCE_LICENSES.md).

@@ -1,8 +1,8 @@
-# Termll
+# Termax
 
-Termll is an LLM agent in your terminal to make your life easier.
+Termax is an LLM agent in your terminal to make your life easier.
 
-With termll, you can
+With termax, you can
 
 - 🍼 Ask Commands: ask your terminal to execute commands, no need to know them in advance.
 - 📐 Tailor Commands: customize and fix commands for your devices, even those copied from Stack Overflow.
@@ -11,7 +11,7 @@ With termll, you can
 ## Installation
 
 ```bash
-pip install termll
+pip install termax
 ```
 
 ## Quick Start
