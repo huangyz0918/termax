@@ -12,22 +12,19 @@ jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
+      - uses: actions/checkout@v2
       - name: Set up Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v2
         with:
           python-version: '3.x'
-
-      - name: Build package
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python setup.py sdist bdist_wheel build
-
-      - name: Publish package to PyPI
-        with:
+          pip install setuptools wheel twine
+      - name: Build and publish package
+        env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: |
-          python -m build
+          python setup.py sdist bdist_wheel
           twine upload dist/*
