@@ -40,7 +40,7 @@ def config():
     platform = answers["platform"].lower()
     default_config = {
         "model": "gpt-3.5-turbo",
-        "platform":platform,
+        "platform": platform,
         "api_key": sub_answers["api_key"] if sub_answers else None,
         'temperature': 0.7,
         'save': False,

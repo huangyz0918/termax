@@ -4,6 +4,9 @@ from pathlib import Path
 
 from termax.utils import CONFIG_SEC_OPENAI
 
+CONFIG_HOME = os.path.join(str(Path.home()), ".termax")
+CONFIG_PATH = os.path.join(CONFIG_HOME, "config")
+
 
 class Config:
     """
@@ -11,10 +14,10 @@ class Config:
     """
 
     def __init__(self):
-        self.home = os.path.join(str(Path.home()), ".termax")
+        self.home = CONFIG_HOME
         Path(self.home).mkdir(parents=True, exist_ok=True)
 
-        self.config_path = os.path.join(str(Path.home()), ".termax", "config")
+        self.config_path = CONFIG_PATH
         self.config = configparser.ConfigParser()
         self.config.read(self.config_path)
         self.snowflake_auth = None

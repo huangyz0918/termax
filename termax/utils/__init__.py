@@ -1,2 +1,2 @@
 from .const import *
-from .config import Config
+from .config import *

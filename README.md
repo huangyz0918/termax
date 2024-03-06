@@ -14,5 +14,16 @@ With termax, you can
 pip install termax
 ```
 
+For developers, you can install from source code to enable the latest features and bug fixes.
+
+```bash:
+cd <root of this project>
+pip install -e .
+```
+
 ## Quick Start
+
+```bash
+t --help
+```
 
