@@ -38,8 +38,8 @@ setup(
     packages=find_packages(),
     entry_points={
         "console_scripts": [
-            "termax=termax.cli:cli",
-            "t=termax.cli:cli",
+            "termax=termax.cli.cli:cli",
+            "t=termax.cli.cli:cli",
         ]
     },
     include_package_data=True,
