@@ -1,6 +1,7 @@
 import os
 import platform
 
+
 class Prompt:
     def __init__(self):
         self.os = f'{platform.system()} {platform.release()}'
@@ -8,8 +9,8 @@ class Prompt:
         self.environ = os.environ
         self.architecture = platform.platform()
         self.files = os.listdir('.')
-    
-    def produce(self, request):        
+
+    def produce(self, request):
         prompt = (
             f"Provide only shell commands for os without any description. "
             f"If there is a lack of details, provide most logical solution. "
@@ -24,5 +25,5 @@ class Prompt:
             f"Computer architecture: {self.architecture} \n"
             f"User environment variables: {self.environ}"
         )
-        
+
         return prompt

@@ -29,7 +29,7 @@ class Config:
 
         Returns: a dictionary of the configuration.
         """
-        self.config.read(self.config_path) # 这段代码应该是多余的，可以删掉
+        self.config.read(self.config_path)
         config_dict = {}
 
         for section in self.config.sections():
