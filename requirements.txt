@@ -1,4 +1,5 @@
 rich
 click
 inquirer
-
+chromadb
+psutil
