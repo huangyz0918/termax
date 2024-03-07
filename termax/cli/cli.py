@@ -5,7 +5,7 @@ import inquirer
 import termax
 from termax.utils import Config, CONFIG_LLM_LIST, CONFIG_PATH
 from termax.prompt import Prompt
-from termax.agent import OpenAI
+from termax.agent import OpenAIModel
 
 
 class DefaultCommandGroup(click.Group):
@@ -92,15 +92,13 @@ def generate(text):
     This function will call and generate the commands from LLM
     """
     config_dict = Config().read()
-    click.echo({"config": config_dict, "text": text})
-
     # check the configuration available or not
     if not os.path.exists(CONFIG_PATH):
         click.echo("Config file not found. Running config setup...")
         build_config()
 
     # Call the openAI API request, the parameter "text" is the input text.
-    model = OpenAI(
+    model = OpenAIModel(
         api_key=config_dict['openai']['api_key'], version=config_dict['openai']['model'],
         temperature=float(config_dict['openai']['temperature']),
         prompt=Prompt().produce(text)
