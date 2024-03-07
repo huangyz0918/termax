@@ -6,10 +6,6 @@ from openai import OpenAI
 class Model(ABC):
     @abstractmethod
     def to_command(self, request):
-        """
-        This method should implement the logic to send a request to an API
-        and return the command.
-        """
         pass
 
 
