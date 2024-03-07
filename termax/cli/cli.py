@@ -100,7 +100,7 @@ def generate(text):
         build_config()
 
     # Call the openAI API request, the parameter "text" is the input text.
-    model = OpenAI(api_key=config_dict['openai']['api_key'], version='gpt-4', temperature=0,
+    model = OpenAI(api_key=config_dict['openai']['api_key'], version=config_dict['openai']['model'], temperature=float(config_dict['openai']['temperature']),
                prompt=Prompt().produce(text))
     model.to_command(request=text)
 
