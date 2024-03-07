@@ -1,9 +1,11 @@
 import re
 import os
 import sys
+import pwd
 import psutil
 import socket
 import shutil
+import getpass
 import platform
 import subprocess
 from datetime import datetime
@@ -198,9 +200,60 @@ def get_gpu_metadata():
     }
 
 
+def get_command_history(limit=15):
+    """
+    get_command_history: Get the command history of the current user.
+
+    :param limit: the number of commands to return.
+    :return:
+    """
+    shell_type = ''
+    if sys.platform.startswith('linux') or sys.platform == 'darwin':
+        # Attempt to detect the default shell from the $SHELL environment variable or /etc/passwd
+        shell = os.environ.get('SHELL', pwd.getpwnam(getpass.getuser()).pw_shell)
+
+        if 'bash' in shell:
+            shell_type = 'bash'
+            history_file = os.path.join(os.environ['HOME'], '.bash_history')
+        elif 'zsh' in shell:
+            shell_type = 'zsh'
+            history_file = os.path.join(os.environ['HOME'], '.zsh_history')
+        # Add additional elif blocks for other shells like fish, tcsh, etc.
+        else:
+            raise ValueError(f"Shell not supported or history file unknown for shell: {shell}")
+
+    elif sys.platform == 'win32':
+        # For PowerShell
+        shell_type = 'powershell'
+        history_file = os.path.join(os.environ['APPDATA'], 'Microsoft', 'Windows', 'PowerShell', 'PSReadLine',
+                                    'ConsoleHost_history.txt')
+    else:
+        raise ValueError(f"Platform not supported: {sys.platform}")
+
+    try:
+        history_lines = []
+        with open(history_file, 'rb') as file:  # Open as binary
+            for line in file:
+                try:
+                    # Decode each line individually, replace errors
+                    decoded_line = line.decode('utf-8', 'replace').strip()
+                    if shell_type == 'zsh':
+                        # Remove the timestamp prefix from zsh history
+                        decoded_line = re.sub(r'^:\s[0-9]+:[0-9];', '', decoded_line)
+                    history_lines.append(decoded_line)
+                except UnicodeDecodeError:
+                    # In case decoding fails, skip the line or handle appropriately
+                    continue
+            # Return the most recent `limit` commands
+            return {"shell_command_history": history_lines[-limit:]}
+    except Exception as e:
+        return f"Failed to read history file: {e}"
+
+
 if __name__ == "__main__":
     print(get_git_metadata())
     print(get_system_metadata())
     print(get_python_metadata())
     print(get_gpu_metadata())
     print(get_path_metadata())
+    print(get_command_history())
