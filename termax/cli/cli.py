@@ -86,11 +86,12 @@ def cli():
 
 
 @cli.command(default_command=True)
-@click.argument('text')
+@click.argument('text', nargs=-1)
 def generate(text):
     """
     This function will call and generate the commands from LLM
     """
+    text = " ".join(text)
     config_dict = Config().read()
     # check the configuration available or not
     if not os.path.exists(CONFIG_PATH):
