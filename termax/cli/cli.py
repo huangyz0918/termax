@@ -3,7 +3,8 @@ import click
 import inquirer
 
 import termax
-from termax.utils import Config, CONFIG_LLM_LIST, CONFIG_PATH
+from termax.utils import Config, CONFIG_PATH
+from termax.utils.const import *
 from termax.prompt import Prompt
 from termax.agent import OpenAIModel
 
@@ -54,9 +55,14 @@ def build_config():
     ]
 
     answers = inquirer.prompt(questions)
+    selected_platform = answers["platform"].lower()
+
+    general_config = {
+        "platform": selected_platform,
+    }
 
     sub_answers = None
-    if answers["platform"] == "OpenAI":
+    if selected_platform == CONFIG_SEC_OPENAI:
         sub_questions = [
             inquirer.Text(
                 "api_key",
@@ -65,18 +71,21 @@ def build_config():
         ]
         sub_answers = inquirer.prompt(sub_questions)
 
-    platform = answers["platform"].lower()
-    default_config = {
-        "model": "gpt-3.5-turbo",
-        "platform": platform,
-        "api_key": sub_answers["api_key"] if sub_answers else None,
-        'temperature': 0.7,
-        'save': False,
-        'auto_execute': False
-    }
+    default_config = {}
+    platform = selected_platform
+    if platform == CONFIG_SEC_OPENAI:
+        default_config = {
+            "model": "gpt-3.5-turbo",
+            "platform": platform,
+            "api_key": sub_answers["api_key"] if sub_answers else None,
+            'temperature': 0.7,
+            'save': False,
+            'auto_execute': False
+        }
 
     configuration = Config()
     configuration.write_platform(default_config, platform=platform)
+    configuration.write_general(general_config)
 
 
 @click.group(cls=DefaultCommandGroup)
@@ -98,11 +107,10 @@ def generate(text):
         click.echo("Config file not found. Running config setup...")
         build_config()
 
-    # Call the openAI API request, the parameter "text" is the input text.
     model = OpenAIModel(
         api_key=config_dict['openai']['api_key'], version=config_dict['openai']['model'],
         temperature=float(config_dict['openai']['temperature']),
-        prompt=Prompt().produce(text)
+        prompt=Prompt().nl2commands()
     )
     model.to_command(request=text)
 

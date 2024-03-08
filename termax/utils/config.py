@@ -2,7 +2,7 @@ import os
 import configparser
 from pathlib import Path
 
-from termax.utils import CONFIG_SEC_OPENAI
+from termax.utils.const import *
 
 CONFIG_HOME = os.path.join(str(Path.home()), ".termax")
 CONFIG_PATH = os.path.join(CONFIG_HOME, "config")
@@ -29,7 +29,7 @@ class Config:
 
         Returns: a dictionary of the configuration.
         """
-        self.config.read(self.config_path)
+        self.reload_config(CONFIG_PATH)
         config_dict = {}
 
         for section in self.config.sections():
@@ -56,6 +56,21 @@ class Config:
         else:
             raise ValueError("there is no '[openai]' section found in the configuration file.")
 
+    def write_general(self, config_dict: dict):
+        """
+        write_general: write the general configuration.
+
+        """
+        if not self.config.has_section(CONFIG_SEC_GENERAL):
+            self.config.add_section(CONFIG_SEC_GENERAL)
+
+        self.config[CONFIG_SEC_GENERAL] = config_dict
+
+        # save the new configuration and reload.
+        with open(self.config_path, 'w') as configfile:
+            self.config.write(configfile)
+            self.reload_config(self.config_path)
+
     def write_platform(
             self,
             config_dict: dict,
@@ -66,8 +81,8 @@ class Config:
 
         """
         # create the configuration to connect with OpenAI.
-        if not self.config.has_section(CONFIG_SEC_OPENAI):
-            self.config.add_section(CONFIG_SEC_OPENAI)
+        if not self.config.has_section(platform):
+            self.config.add_section(platform)
 
         self.config[platform] = config_dict
 
