@@ -6,7 +6,7 @@ import termax
 from termax.utils import Config, CONFIG_PATH
 from termax.utils.const import *
 from termax.prompt import Prompt
-from termax.agent import OpenAIModel
+from termax.agent import OpenAIModel, GeminiModel
 
 
 class DefaultCommandGroup(click.Group):
@@ -107,9 +107,20 @@ def generate(text):
         click.echo("Config file not found. Running config setup...")
         build_config()
 
+    print("Ouput from OpenAI:")
     model = OpenAIModel(
         api_key=config_dict['openai']['api_key'], version=config_dict['openai']['model'],
         temperature=float(config_dict['openai']['temperature']),
+        prompt=Prompt().nl2commands()
+    )
+    model.to_command(request=text)
+    
+    print("\n\nOuput from Gemini:")
+    model = GeminiModel(
+        api_key=config_dict['gemini']['api_key'], version=config_dict['gemini']['model'],
+        generation_config={'stop_sequences' : config_dict['gemini']['stop_sequences'], 'temperature' : config_dict['gemini']['temperature'], 
+                           'top_p' : config_dict['gemini']['top_p'], 'top_k' : config_dict['gemini']['top_k'], 
+                           'candidate_count' : config_dict['gemini']['candidate_count'], 'max_output_tokens' : config_dict['gemini']['max_output_tokens']},
         prompt=Prompt().nl2commands()
     )
     model.to_command(request=text)
