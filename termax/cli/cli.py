@@ -1,6 +1,7 @@
 import os
 import click
 import inquirer
+import subprocess
 
 import termax
 from termax.utils import Config, CONFIG_PATH
@@ -59,6 +60,8 @@ def build_config():
 
     general_config = {
         "platform": selected_platform,
+        "auto_execute": True,
+        "show_command": False
     }
 
     sub_answers = None
@@ -107,23 +110,27 @@ def generate(text):
         click.echo("Config file not found. Running config setup...")
         build_config()
 
-    print("Ouput from OpenAI:")
     model = OpenAIModel(
         api_key=config_dict['openai']['api_key'], version=config_dict['openai']['model'],
         temperature=float(config_dict['openai']['temperature']),
         prompt=Prompt().nl2commands()
     )
-    model.to_command(request=text)
+
     
-    print("\n\nOuput from Gemini:")
-    model = GeminiModel(
-        api_key=config_dict['gemini']['api_key'], version=config_dict['gemini']['model'],
-        generation_config={'stop_sequences' : config_dict['gemini']['stop_sequences'], 'temperature' : config_dict['gemini']['temperature'], 
-                           'top_p' : config_dict['gemini']['top_p'], 'top_k' : config_dict['gemini']['top_k'], 
-                           'candidate_count' : config_dict['gemini']['candidate_count'], 'max_output_tokens' : config_dict['gemini']['max_output_tokens']},
-        prompt=Prompt().nl2commands()
-    )
-    model.to_command(request=text)
+#     model = GeminiModel(
+#         api_key=config_dict['gemini']['api_key'], version=config_dict['gemini']['model'],
+#         generation_config={'stop_sequences' : config_dict['gemini']['stop_sequences'], 'temperature' : config_dict['gemini']['temperature'], 
+#                            'top_p' : config_dict['gemini']['top_p'], 'top_k' : config_dict['gemini']['top_k'], 
+#                            'candidate_count' : config_dict['gemini']['candidate_count'], 'max_output_tokens' : config_dict['gemini']['max_output_tokens']},
+#         prompt=Prompt().nl2commands()
+#     )
+
+    command = model.to_command(text)
+    if config_dict['general']['show_command'] == "True":
+        click.echo(f"Command: {command}")
+
+    if config_dict['general']['auto_execute']:
+        subprocess.run(command, shell=True, text=True)
 
 
 @cli.command()

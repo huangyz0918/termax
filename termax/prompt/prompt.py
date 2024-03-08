@@ -1,32 +1,42 @@
-import os
-import platform
+from termax.utils.metadata import *
 
 
 class Prompt:
     def __init__(self):
-        self.os = f'{platform.system()} {platform.release()}'
-        self.cwd = os.getcwd()
-        self.environ = os.environ
-        self.architecture = platform.platform()
-        self.files = os.listdir('.')
+        self.git_metadata = get_git_metadata()
+        self.system_metadata = get_system_metadata()
+        self.python_metadata = get_python_metadata()
+        self.gpu_metadata = get_gpu_metadata()
+        self.path_metadata = get_path_metadata()
+        self.command_history = get_command_history()
 
     def nl2commands(self):
         return f"""
-        You are an shell expert, you can convert this text to shell commands.
-        Please provide only shell commands for os without any description.
-        Ensure the output is a valid shell command.
-        If multiple steps required try to combine them together. 
-        Do not provide markdown formatting such as ```.
+        You are an shell expert, you can convert this text to shell commands.\n
         
-        Here are some information you may need to know. \n
+        1. Please provide only shell commands for os without any description.
+        2. Ensure the output is a valid shell command.
+        3. If multiple steps required try to combine them together.
         
-        Operating system: {self.os} \n
+        Here are some information you may need to know.\n
         
-        Current working directory: {self.cwd} \n
+        1. The commands should be able to run on the current system.
+        2. The files in the commands (if any) should be in the current working directory.
+        3. The CLI application should be installed in the system (check the path information).
         
-        Files in directory: {self.files} \n
+        \nCurrent system information (in dict format): {self.system_metadata} \n
         
-        Computer architecture: {self.architecture} \n
+        \nGit information in the current directory (in dict format): {self.git_metadata} \n
         
-        User environment variables: {self.environ} \n
+        \nThe Python environment information (in dict format): {self.python_metadata} \n
+        
+        \nThe GPU environment information (empty means no available GPUs) (in dict format): {self.gpu_metadata} \n
+        
+        \nThe user's system PATH information (in dict format): {self.path_metadata} \n
+        
+        \nThe user's command history (in dict format): {self.command_history} \n
+        
+        The output shell commands is (you must replace the `{{commands}}` with the actual commands):
+        
+        Commands: ${{commands}}
         """
