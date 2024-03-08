@@ -1,6 +1,7 @@
 import os
 import click
 import inquirer
+import subprocess
 
 import termax
 from termax.utils import Config, CONFIG_PATH
@@ -59,6 +60,8 @@ def build_config():
 
     general_config = {
         "platform": selected_platform,
+        "auto_execute": True,
+        "show_command": False
     }
 
     sub_answers = None
@@ -112,7 +115,13 @@ def generate(text):
         temperature=float(config_dict['openai']['temperature']),
         prompt=Prompt().nl2commands()
     )
-    model.to_command(request=text)
+
+    command = model.to_command(text)
+    if config_dict['general']['show_command'] == "True":
+        click.echo(f"Command: {command}")
+
+    if config_dict['general']['auto_execute']:
+        subprocess.run(command, shell=True, text=True)
 
 
 @cli.command()

@@ -1,4 +1,3 @@
-import subprocess
 from openai import OpenAI
 from abc import ABC, abstractmethod
 
@@ -35,7 +34,4 @@ class OpenAIModel(Model):
             temperature=self.temperature
         )
         response = completion.choices[0].message.content
-        command = extract_shell_commands(response)
-        print(f'{command}')
-
-        subprocess.run(command, shell=True, text=True)
+        return extract_shell_commands(response)
