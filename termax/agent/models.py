@@ -1,6 +1,8 @@
-from abc import ABC, abstractmethod
 import subprocess
 from openai import OpenAI
+from abc import ABC, abstractmethod
+
+from termax.prompt import extract_shell_commands
 
 
 class Model(ABC):
@@ -33,6 +35,7 @@ class OpenAIModel(Model):
             temperature=self.temperature
         )
         response = completion.choices[0].message.content
-        print(f'{response} \n')
+        command = extract_shell_commands(response)
+        print(f'{command}')
 
-        subprocess.run(response, shell=True, text=True)
+        subprocess.run(command, shell=True, text=True)
