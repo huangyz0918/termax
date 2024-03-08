@@ -110,21 +110,30 @@ def generate(text):
         click.echo("Config file not found. Running config setup...")
         build_config()
 
-    model = OpenAIModel(
-        api_key=config_dict['openai']['api_key'], version=config_dict['openai']['model'],
-        temperature=float(config_dict['openai']['temperature']),
-        prompt=Prompt().nl2commands()
-    )
+    platform = config_dict['general']['platform']
+    if platform == CONFIG_SEC_OPENAI:
+        model = OpenAIModel(
+            api_key=config_dict['openai']['api_key'], version=config_dict['openai']['model'],
+            temperature=float(config_dict['openai']['temperature']),
+            prompt=Prompt().nl2commands()
+        )
+    elif platform == CONFIG_SEC_GEMINI:
+        model = GeminiModel(
+            api_key=config_dict['gemini']['api_key'], version=config_dict['gemini']['model'],
+            generation_config={
+                'stop_sequences': config_dict['gemini']['stop_sequences'],
+                'temperature': config_dict['gemini']['temperature'],
+                'top_p': config_dict['gemini']['top_p'],
+                'top_k': config_dict['gemini']['top_k'],
+                'candidate_count': config_dict['gemini']['candidate_count'],
+                'max_output_tokens': config_dict['gemini']['max_output_tokens']
+            },
+            prompt=Prompt().nl2commands()
+        )
+    else:
+        raise ValueError(f"Platform {platform} not supported.")
 
-    
-#     model = GeminiModel(
-#         api_key=config_dict['gemini']['api_key'], version=config_dict['gemini']['model'],
-#         generation_config={'stop_sequences' : config_dict['gemini']['stop_sequences'], 'temperature' : config_dict['gemini']['temperature'], 
-#                            'top_p' : config_dict['gemini']['top_p'], 'top_k' : config_dict['gemini']['top_k'], 
-#                            'candidate_count' : config_dict['gemini']['candidate_count'], 'max_output_tokens' : config_dict['gemini']['max_output_tokens']},
-#         prompt=Prompt().nl2commands()
-#     )
-
+    # generate the commands from the model, and execute if auto_execute is True
     command = model.to_command(text)
     if config_dict['general']['show_command'] == "True":
         click.echo(f"Command: {command}")
