@@ -7,7 +7,7 @@ import termax
 from termax.utils import Config, CONFIG_PATH
 from termax.utils.const import *
 from termax.prompt import Prompt
-from termax.agent import OpenAIModel, GeminiModel
+from termax.agent import OpenAIModel, GeminiModel, ClaudeModel
 
 
 class DefaultCommandGroup(click.Group):
@@ -110,7 +110,8 @@ def generate(text):
         click.echo("Config file not found. Running config setup...")
         build_config()
 
-    platform = config_dict['general']['platform']
+    # platform = config_dict['general']['platform']
+    platform = CONFIG_SEC_CLAUDE
     if platform == CONFIG_SEC_OPENAI:
         model = OpenAIModel(
             api_key=config_dict['openai']['api_key'], version=config_dict['openai']['model'],
@@ -127,6 +128,18 @@ def generate(text):
                 'top_k': config_dict['gemini']['top_k'],
                 'candidate_count': config_dict['gemini']['candidate_count'],
                 'max_output_tokens': config_dict['gemini']['max_output_tokens']
+            },
+            prompt=Prompt().nl2commands()
+        )
+    elif platform == CONFIG_SEC_CLAUDE:
+        model = ClaudeModel(
+            api_key=config_dict['claude']['api_key'], version=config_dict['claude']['model'],
+            generation_config={
+                'stop_sequences': config_dict['claude']['stop_sequences'],
+                'temperature': config_dict['claude']['temperature'],
+                'top_p': config_dict['claude']['top_p'],
+                'top_k': config_dict['claude']['top_k'],
+                'max_tokens': config_dict['claude']['max_tokens']
             },
             prompt=Prompt().nl2commands()
         )
