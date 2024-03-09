@@ -2,6 +2,7 @@ rich
 click
 openai
 google.generativeai
+anthropic
 inquirer
 chromadb
 psutil
