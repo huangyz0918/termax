@@ -28,4 +28,5 @@ class OpenAIModel(Model):
             temperature=self.temperature
         )
         response = completion.choices[0].message.content
+        print("response:", response)
         return extract_shell_commands(response)

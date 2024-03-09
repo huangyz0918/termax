@@ -10,6 +10,7 @@ class ClaudeModel(Model):
         self.version = version
         self.prompt = prompt
         self.generation_config = generation_config
+
     def to_command(self, request):
         message = self.client.messages.create(
             model=self.version,
@@ -19,7 +20,7 @@ class ClaudeModel(Model):
             top_k=self.generation_config['top_k'],
             top_p=self.generation_config['top_p'],
             stop_sequences=self.generation_config['stop_sequences'],
-            messages=[{"role": "user", "content" : request}]
+            messages=[{"role": "user", "content": request}]
         )
         response = message.content[0].text
         return extract_shell_commands(response)

@@ -18,11 +18,13 @@ class Prompt:
         2. Ensure the output is a valid shell command.
         3. If multiple steps required try to combine them together.
         
-        Here are some information you may need to know.\n
+        Here are some rules you need to follow:\n
         
-        1. The commands should be able to run on the current system.
-        2. The files in the commands (if any) should be in the current working directory.
+        1. The commands should be able to run on the current system according to the system information.
+        2. The files in the commands (if any) should be available in the path, according to the path information.
         3. The CLI application should be installed in the system (check the path information).
+        
+        Here are some information you may need to know:\n
         
         \nCurrent system information (in dict format): {self.system_metadata} \n
         
@@ -36,7 +38,7 @@ class Prompt:
         
         \nThe user's command history (in dict format): {self.command_history} \n
         
-        The output shell commands is (you must replace the `{{commands}}` with the actual commands):
+        The output shell commands is (please replace the `{{commands}}` with the actual commands):
         
         Commands: ${{commands}}
         """
