@@ -4,9 +4,9 @@ import inquirer
 import subprocess
 
 import termax
-from termax.utils import Config, CONFIG_PATH
 from termax.utils.const import *
 from termax.prompt import Prompt
+from termax.utils import Config, CONFIG_PATH
 from termax.agent import OpenAIModel, GeminiModel
 
 
