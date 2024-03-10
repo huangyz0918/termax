@@ -3,6 +3,7 @@ click
 openai
 google.generativeai
 anthropic
+mistralai
 inquirer
 chromadb
 psutil
