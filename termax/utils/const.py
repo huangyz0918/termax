@@ -1,5 +1,5 @@
 CONFIG_SEC_GENERAL = 'general'
-CONFIG_LLM_LIST = ['OpenAI', 'Gemini', 'Claude', 'Mistral', 'VertexAI', 'Ernie', 'Qianwen']
+CONFIG_LLM_LIST = ['OpenAI', 'Gemini', 'Claude', 'Mistral', 'VertexAI', 'Qianfan', 'Qianwen']
 
 # OpenAI
 CONFIG_SEC_OPENAI = 'openai'
@@ -18,7 +18,7 @@ CONFIG_SEC_MISTRAL = 'mistral'
 CONFIG_SEC_VERTEXAI = 'vertexai'
 
 # Ernie
-CONFIG_SEC_ERNIE = 'ernie'
+CONFIG_SEC_QIANFAN = 'qianfan'
 
 # Qianwen
 CONFIG_SEC_QIANWEN = 'qianwen'

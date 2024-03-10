@@ -7,7 +7,7 @@ import termax
 from termax.utils.const import *
 from termax.prompt import Prompt
 from termax.utils import Config, CONFIG_PATH
-from termax.agent import OpenAIModel, GeminiModel, ClaudeModel
+from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel
 
 
 class DefaultCommandGroup(click.Group):
@@ -109,6 +109,7 @@ def generate(text):
         build_config()
 
     platform = config_dict['general']['platform']
+    platform = CONFIG_SEC_QIANFAN
     if platform == CONFIG_SEC_OPENAI:
         model = OpenAIModel(
             api_key=config_dict['openai']['api_key'], version=config_dict['openai']['model'],
@@ -137,6 +138,17 @@ def generate(text):
                 'top_p': config_dict['claude']['top_p'],
                 'top_k': config_dict['claude']['top_k'],
                 'max_tokens': config_dict['claude']['max_tokens']
+            },
+            prompt=Prompt().nl2commands()
+        )
+    elif platform == CONFIG_SEC_QIANFAN:
+        model = QianFanModel(
+            api_key=config_dict['qianfan']['api_key'], secret_key=config_dict['qianfan']['secret_key'],
+            version=config_dict['qianfan']['model'],
+            generation_config={
+                'temperature': config_dict['qianfan']['temperature'],
+                'top_p': config_dict['qianfan']['top_p'],
+                'max_output_tokens': config_dict['qianfan']['max_output_tokens']
             },
             prompt=Prompt().nl2commands()
         )
