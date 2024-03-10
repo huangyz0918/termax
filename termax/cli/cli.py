@@ -7,7 +7,7 @@ import termax
 from termax.utils.const import *
 from termax.prompt import Prompt
 from termax.utils import Config, CONFIG_PATH
-from termax.agent import OpenAIModel, GeminiModel, ClaudeModel
+from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, MistralModel
 
 
 class DefaultCommandGroup(click.Group):
@@ -140,11 +140,22 @@ def generate(text):
             },
             prompt=Prompt().nl2commands()
         )
+    elif platform == CONFIG_SEC_MISTRAL:
+        model = MistralModel(
+            api_key=config_dict['mistral']['api_key'], version=config_dict['mistral']['model'],
+            generation_config={
+                'temperature': config_dict['mistral']['temperature'],
+                'top_p': config_dict['mistral']['top_p'],
+                'max_tokens': config_dict['mistral']['max_tokens']
+            },
+            prompt=Prompt().nl2commands()
+        )
     else:
         raise ValueError(f"Platform {platform} not supported.")
 
     # generate the commands from the model, and execute if auto_execute is True
     command = model.to_command(text)
+
     if config_dict['general']['show_command'] == "True":
         click.echo(f"Command: {command}")
 
