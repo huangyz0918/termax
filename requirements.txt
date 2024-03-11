@@ -4,6 +4,7 @@ openai
 google.generativeai
 anthropic
 mistralai
+dashscope
 inquirer
 chromadb
 psutil
