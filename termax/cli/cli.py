@@ -7,7 +7,7 @@ import termax
 from termax.utils.const import *
 from termax.prompt import Prompt
 from termax.utils import Config, CONFIG_PATH
-from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel
+from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel， MistralModel, QianWenModel
 
 
 class DefaultCommandGroup(click.Group):
@@ -149,6 +149,25 @@ def generate(text):
                 'temperature': config_dict['qianfan']['temperature'],
                 'top_p': config_dict['qianfan']['top_p'],
                 'max_output_tokens': config_dict['qianfan']['max_output_tokens']
+    elif platform == CONFIG_SEC_MISTRAL:
+        model = MistralModel(
+            api_key=config_dict['mistral']['api_key'], version=config_dict['mistral']['model'],
+            generation_config={
+                'temperature': config_dict['mistral']['temperature'],
+                'top_p': config_dict['mistral']['top_p'],
+                'max_tokens': config_dict['mistral']['max_tokens']
+            },
+            prompt=Prompt().nl2commands()
+        )
+    elif platform == CONFIG_SEC_QIANWEN:
+        model = QianWenModel(
+            api_key=config_dict['qianwen']['api_key'], version=config_dict['qianwen']['model'],
+            generation_config={
+                'temperature': config_dict['qianwen']['temperature'],
+                'top_p': config_dict['qianwen']['top_p'],
+                'top_k': config_dict['qianwen']['top_k'],
+                'stop': config_dict['qianwen']['stop'],
+                'max_tokens': config_dict['qianwen']['max_tokens'] 
             },
             prompt=Prompt().nl2commands()
         )
@@ -157,6 +176,7 @@ def generate(text):
 
     # generate the commands from the model, and execute if auto_execute is True
     command = model.to_command(text)
+
     if config_dict['general']['show_command'] == "True":
         click.echo(f"Command: {command}")
 
