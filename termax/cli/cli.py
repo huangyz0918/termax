@@ -109,7 +109,6 @@ def generate(text):
         build_config()
 
     platform = config_dict['general']['platform']
-    platform = CONFIG_SEC_QIANFAN
     if platform == CONFIG_SEC_OPENAI:
         model = OpenAIModel(
             api_key=config_dict['openai']['api_key'], version=config_dict['openai']['model'],
