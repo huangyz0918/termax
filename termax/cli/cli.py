@@ -102,12 +102,13 @@ def generate(text):
     This function will call and generate the commands from LLM
     """
     text = " ".join(text)
-    config_dict = Config().read()
+    configuration = Config()
     # check the configuration available or not
     if not os.path.exists(CONFIG_PATH):
         click.echo("Config file not found. Running config setup...")
         build_config()
 
+    config_dict = configuration.read()
     platform = config_dict['general']['platform']
     if platform == CONFIG_SEC_OPENAI:
         model = OpenAIModel(

@@ -28,10 +28,6 @@ class Prompt:
         
         \nCurrent system information (in dict format): {self.system_metadata} \n
         
-        \nGit information in the current directory (in dict format): {self.git_metadata} \n
-        
-        \nThe Python environment information (in dict format): {self.python_metadata} \n
-        
         \nThe GPU environment information (empty means no available GPUs) (in dict format): {self.gpu_metadata} \n
         
         \nThe user's system PATH information (in dict format): {self.path_metadata} \n
