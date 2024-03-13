@@ -3,6 +3,7 @@ import dashscope
 from .types import Model
 from termax.prompt import extract_shell_commands
 
+
 class QianWenModel(Model):
     def __init__(self, api_key, version, prompt, generation_config):
         dashscope.api_key = api_key
@@ -24,4 +25,3 @@ class QianWenModel(Model):
         )
         response = message['output'].text
         return extract_shell_commands(response)
-

@@ -4,6 +4,7 @@ from mistralai.models.chat_completion import ChatMessage
 from .types import Model
 from termax.prompt import extract_shell_commands
 
+
 class MistralModel(Model):
     def __init__(self, api_key, version, prompt, generation_config):
         self.client = MistralClient(api_key=api_key)
@@ -19,6 +20,6 @@ class MistralModel(Model):
             temperature=self.generation_config['temperature'],
             top_p=self.generation_config['top_p'],
             max_tokens=self.generation_config['max_tokens']
-            )
+        )
         response = chat_response.choices[0].message.content
         return extract_shell_commands(response)
