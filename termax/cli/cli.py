@@ -2,6 +2,7 @@ import os
 import click
 import inquirer
 import subprocess
+from rich.console import Console
 
 import termax
 from termax.utils.const import *
@@ -101,6 +102,7 @@ def generate(text):
     """
     This function will call and generate the commands from LLM
     """
+    console = Console()
     text = " ".join(text)
     configuration = Config()
     # check the configuration available or not
@@ -178,7 +180,8 @@ def generate(text):
         raise ValueError(f"Platform {platform} not supported.")
 
     # generate the commands from the model, and execute if auto_execute is True
-    command = model.to_command(text)
+    with console.status(f"[cyan]Generating..."):
+        command = model.to_command(text)
 
     if config_dict['general']['show_command'] == "True":
         click.echo(f"Command: {command}")
