@@ -56,13 +56,13 @@ def build_config():
 
     answers = inquirer.prompt(questions)
     selected_platform = answers["platform"].lower()
-
     general_config = {
         "platform": selected_platform,
         "auto_execute": True,
         "show_command": False
     }
 
+    # configure the platform specific configurations
     sub_answers = None
     if selected_platform == CONFIG_SEC_OPENAI:
         sub_questions = [
@@ -85,6 +85,24 @@ def build_config():
             'auto_execute': False
         }
 
+    # configure the auto_execute and show_command for the selected platform
+    exe_questions = [
+        inquirer.Confirm(
+            "auto_execute",
+            message="Do you want to execute the generated command automatically?",
+            default=True,
+        ),
+        inquirer.Confirm(
+            "show_command",
+            message="Do you want to show the generated command?",
+            default=False,
+        )
+    ]
+    sub_answers = inquirer.prompt(exe_questions)
+    general_config["auto_execute"] = sub_answers["auto_execute"]
+    general_config["show_command"] = sub_answers["show_command"]
+
+    # write the configuration to the file
     configuration = Config()
     configuration.write_platform(default_config, platform=platform)
     configuration.write_general(general_config)
