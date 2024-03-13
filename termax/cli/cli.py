@@ -41,15 +41,17 @@ class DefaultCommandGroup(click.Group):
             return super(DefaultCommandGroup, self).resolve_command(ctx, args)
 
 
-def build_config():
+def build_config(general: bool):
     """
     build_config: build the configuration for Termax.
     :return:
     """
+    configuration = Config()
+    # configure the general configurations
     questions = [
         inquirer.List(
             "platform",
-            message="What LLM (platform) are you using?",
+            message="What LLM (platform) are you using? (and we will set this as default)",
             choices=CONFIG_LLM_LIST,
         ),
     ]
@@ -62,30 +64,6 @@ def build_config():
         "show_command": False
     }
 
-    # configure the platform specific configurations
-    sub_answers = None
-    if selected_platform == CONFIG_SEC_OPENAI:
-        sub_questions = [
-            inquirer.Text(
-                "api_key",
-                message="What is your OpenAI API key?",
-            )
-        ]
-        sub_answers = inquirer.prompt(sub_questions)
-
-    default_config = {}
-    platform = selected_platform
-    if platform == CONFIG_SEC_OPENAI:
-        default_config = {
-            "model": "gpt-3.5-turbo",
-            "platform": platform,
-            "api_key": sub_answers["api_key"] if sub_answers else None,
-            'temperature': 0.7,
-            'save': False,
-            'auto_execute': False
-        }
-
-    # configure the auto_execute and show_command for the selected platform
     exe_questions = [
         inquirer.Confirm(
             "auto_execute",
@@ -102,9 +80,34 @@ def build_config():
     general_config["auto_execute"] = sub_answers["auto_execute"]
     general_config["show_command"] = sub_answers["show_command"]
 
-    # write the configuration to the file
-    configuration = Config()
-    configuration.write_platform(default_config, platform=platform)
+    # configure the platform specific configurations
+    if not general:
+        sub_answers = None
+        if selected_platform == CONFIG_SEC_OPENAI:
+            sub_questions = [
+                inquirer.Text(
+                    "api_key",
+                    message="What is your OpenAI API key?",
+                )
+            ]
+            sub_answers = inquirer.prompt(sub_questions)
+
+        default_config = {}
+        platform = selected_platform
+        if platform == CONFIG_SEC_OPENAI:
+            default_config = {
+                "model": "gpt-3.5-turbo",
+                "platform": platform,
+                "api_key": sub_answers["api_key"] if sub_answers else None,
+                'temperature': 0.7,
+                'save': False,
+                'auto_execute': False
+            }
+
+        # write the platform-related configuration to the file
+        configuration.write_platform(default_config, platform=platform)
+
+    # write the general configuration to the file
     configuration.write_general(general_config)
 
 
@@ -209,8 +212,9 @@ def generate(text):
 
 
 @cli.command()
-def config():
+@click.option('--general', '-g', is_flag=True, help="Set up the general configuration for Termax.")
+def config(general):
     """
     Set up the global configuration for Termax.
     """
-    build_config()
+    build_config(general)
