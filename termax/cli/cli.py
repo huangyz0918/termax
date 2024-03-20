@@ -1,13 +1,12 @@
 import os
 import click
-import inquirer
 import subprocess
 from rich.console import Console
 
 import termax
 from termax.utils.const import *
 from termax.prompt import Prompt, Memory
-from termax.utils import Config, CONFIG_PATH
+from termax.utils import Config, QA, CONFIG_PATH
 from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
 
 
@@ -50,67 +49,17 @@ def build_config(general: bool = False):
     """
     configuration = Config()
     # configure the general configurations
-    questions = [
-        inquirer.List(
-            "platform",
-            message="What LLM (platform) are you using? (and we will set this as default)",
-            choices=CONFIG_LLM_LIST,
-        ),
-    ]
-
-    answers = inquirer.prompt(questions)
-    selected_platform = answers["platform"].lower()
-    general_config = {
-        "platform": selected_platform,
-        "auto_execute": True,
-        "show_command": False
-    }
-
-    exe_questions = [
-        inquirer.Confirm(
-            "auto_execute",
-            message="Do you want to execute the generated command automatically?",
-            default=True,
-        ),
-        inquirer.Confirm(
-            "show_command",
-            message="Do you want to show the generated command?",
-            default=False,
-        )
-    ]
-    sub_answers = inquirer.prompt(exe_questions)
-    general_config["auto_execute"] = sub_answers["auto_execute"]
-    general_config["show_command"] = sub_answers["show_command"]
-
-    # configure the platform specific configurations
-    if not general:
-        sub_answers = None
-        if selected_platform == CONFIG_SEC_OPENAI:
-            sub_questions = [
-                inquirer.Text(
-                    CONFIG_SEC_API_KEY,
-                    message="What is your OpenAI API key?",
-                )
-            ]
-            sub_answers = inquirer.prompt(sub_questions)
-
-        default_config = {}
-        platform = selected_platform
-        if platform == CONFIG_SEC_OPENAI:
-            default_config = {
-                "model": "gpt-3.5-turbo",
-                "platform": platform,
-                "api_key": sub_answers[CONFIG_SEC_API_KEY] if sub_answers else None,
-                'temperature': 0.7,
-                'save': False,
-                'auto_execute': False
-            }
-
-        # write the platform-related configuration to the file
-        configuration.write_platform(default_config, platform=platform)
-
-    # write the general configuration to the file
-    configuration.write_general(general_config)
+    if general:
+        general_config = QA().general_qa()
+        configuration.write_general(general_config)
+    else:
+        platform_config = QA().platform_qa()
+        configuration.write_platform(platform_config, platform=platform_config['platform'])
+        
+        if not configuration.config.has_section('general'):
+            print("\nYou still haven't set the general configuration, please complete the following question.")
+            general_config = QA().general_qa()
+            configuration.write_general(general_config)
 
 
 @click.group(cls=DefaultCommandGroup)
@@ -151,7 +100,7 @@ def generate(text):
         model = GeminiModel(
             api_key=config_dict['gemini'][CONFIG_SEC_API_KEY], version=config_dict['gemini']['model'],
             generation_config={
-                'stop_sequences': config_dict['gemini']['stop_sequences'],
+                'stop_sequences': config_dict['gemini']['stop_sequences'] if config_dict['gemini']['stop_sequences'] != 'None' else None,
                 'temperature': config_dict['gemini']['temperature'],
                 'top_p': config_dict['gemini']['top_p'],
                 'top_k': config_dict['gemini']['top_k'],
@@ -164,7 +113,7 @@ def generate(text):
         model = ClaudeModel(
             api_key=config_dict['claude'][CONFIG_SEC_API_KEY], version=config_dict['claude']['model'],
             generation_config={
-                'stop_sequences': config_dict['claude']['stop_sequences'],
+                'stop_sequences': config_dict['claude']['stop_sequences'] if config_dict['claude']['stop_sequences'] != 'None' else None,
                 'temperature': config_dict['claude']['temperature'],
                 'top_p': config_dict['claude']['top_p'],
                 'top_k': config_dict['claude']['top_k'],
@@ -179,7 +128,7 @@ def generate(text):
             generation_config={
                 'temperature': config_dict['qianfan']['temperature'],
                 'top_p': config_dict['qianfan']['top_p'],
-                'max_output_tokens': config_dict['qianfan']['max_output_tokens']
+                'max_output_tokens': config_dict['qianfan']['max_tokens']
             },
             prompt=prompt.nl2commands(text)
         )
@@ -200,7 +149,7 @@ def generate(text):
                 'temperature': config_dict['qianwen']['temperature'],
                 'top_p': config_dict['qianwen']['top_p'],
                 'top_k': config_dict['qianwen']['top_k'],
-                'stop': config_dict['qianwen']['stop'],
+                'stop': config_dict['qianwen']['stop_sequences'] if config_dict['qianwen']['stop_sequences'] != 'None' else None,
                 'max_tokens': config_dict['qianwen']['max_tokens']
             },
             prompt=prompt.nl2commands(text)
