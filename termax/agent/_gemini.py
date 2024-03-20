@@ -1,5 +1,4 @@
-import google.generativeai as genai
-import google.ai.generativelanguage as glm
+import importlib, warnings
 
 from .types import Model
 from termax.prompt import extract_shell_commands
@@ -7,6 +6,17 @@ from termax.prompt import extract_shell_commands
 
 class GeminiModel(Model):
     def __init__(self, api_key, version, prompt, generation_config):
+        spec = importlib.util.find_spec("google.generativeai")
+        if spec is not None:
+            import google.generativeai as genai
+            import google.ai.generativelanguage as glm
+        else:
+            warnings.warn(
+                "It seems you didn't install google.generativeai. In order to enable the Gemini client related features, "
+                "please make sure google.generativeai Python package has been installed. "
+                "More information, please refer to: https://ai.google.dev/"
+            )
+            exit(1)
         self.client = genai.configure(api_key=api_key)
         self.version = version
         self.chat_history = [glm.Content(parts=[glm.Part(text=prompt)], role="user"),

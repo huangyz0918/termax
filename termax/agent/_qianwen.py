@@ -1,4 +1,4 @@
-import dashscope
+import importlib, warnings
 
 from .types import Model
 from termax.prompt import extract_shell_commands
@@ -6,6 +6,16 @@ from termax.prompt import extract_shell_commands
 
 class QianWenModel(Model):
     def __init__(self, api_key, version, prompt, generation_config):
+        spec = importlib.util.find_spec("dashscope")
+        if spec is not None:
+            import dashscope
+        else:
+            warnings.warn(
+                "It seems you didn't install dashscope. In order to enable the QianWen client related features, "
+                "please make sure dashscope Python package has been installed. "
+                "More information, please refer to: https://help.aliyun.com/zh/dashscope/developer-reference/api-details"
+            )
+            exit(1)
         dashscope.api_key = api_key
         self.version = version
         self.chat_history = [{'role': 'system', 'content': prompt},
