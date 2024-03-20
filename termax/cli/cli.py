@@ -6,7 +6,7 @@ from rich.console import Console
 
 import termax
 from termax.utils.const import *
-from termax.prompt import Prompt
+from termax.prompt import Prompt, Memory
 from termax.utils import Config, CONFIG_PATH
 from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
 
@@ -41,9 +41,11 @@ class DefaultCommandGroup(click.Group):
             return super(DefaultCommandGroup, self).resolve_command(ctx, args)
 
 
-def build_config(general: bool):
+def build_config(general: bool = False):
     """
     build_config: build the configuration for Termax.
+    Args:
+        general: a boolean indicating whether to build the general configuration only.
     :return:
     """
     configuration = Config()
@@ -86,7 +88,7 @@ def build_config(general: bool):
         if selected_platform == CONFIG_SEC_OPENAI:
             sub_questions = [
                 inquirer.Text(
-                    "api_key",
+                    CONFIG_SEC_API_KEY,
                     message="What is your OpenAI API key?",
                 )
             ]
@@ -98,7 +100,7 @@ def build_config(general: bool):
             default_config = {
                 "model": "gpt-3.5-turbo",
                 "platform": platform,
-                "api_key": sub_answers["api_key"] if sub_answers else None,
+                "api_key": sub_answers[CONFIG_SEC_API_KEY] if sub_answers else None,
                 'temperature': 0.7,
                 'save': False,
                 'auto_execute': False
@@ -123,25 +125,31 @@ def generate(text):
     """
     This function will call and generate the commands from LLM
     """
+    memory = Memory()
     console = Console()
     text = " ".join(text)
     configuration = Config()
+
+    # avoid the tokenizers parallelism issue
+    os.environ['TOKENIZERS_PARALLELISM'] = 'false'
+
     # check the configuration available or not
     if not os.path.exists(CONFIG_PATH):
         click.echo("Config file not found. Running config setup...")
         build_config()
 
+    prompt = Prompt(memory)
     config_dict = configuration.read()
     platform = config_dict['general']['platform']
     if platform == CONFIG_SEC_OPENAI:
         model = OpenAIModel(
-            api_key=config_dict['openai']['api_key'], version=config_dict['openai']['model'],
+            api_key=config_dict['openai'][CONFIG_SEC_API_KEY], version=config_dict['openai']['model'],
             temperature=float(config_dict['openai']['temperature']),
-            prompt=Prompt().nl2commands()
+            prompt=prompt.nl2commands(text)
         )
     elif platform == CONFIG_SEC_GEMINI:
         model = GeminiModel(
-            api_key=config_dict['gemini']['api_key'], version=config_dict['gemini']['model'],
+            api_key=config_dict['gemini'][CONFIG_SEC_API_KEY], version=config_dict['gemini']['model'],
             generation_config={
                 'stop_sequences': config_dict['gemini']['stop_sequences'],
                 'temperature': config_dict['gemini']['temperature'],
@@ -150,11 +158,11 @@ def generate(text):
                 'candidate_count': config_dict['gemini']['candidate_count'],
                 'max_output_tokens': config_dict['gemini']['max_output_tokens']
             },
-            prompt=Prompt().nl2commands()
+            prompt=prompt.nl2commands(text)
         )
     elif platform == CONFIG_SEC_CLAUDE:
         model = ClaudeModel(
-            api_key=config_dict['claude']['api_key'], version=config_dict['claude']['model'],
+            api_key=config_dict['claude'][CONFIG_SEC_API_KEY], version=config_dict['claude']['model'],
             generation_config={
                 'stop_sequences': config_dict['claude']['stop_sequences'],
                 'temperature': config_dict['claude']['temperature'],
@@ -162,32 +170,32 @@ def generate(text):
                 'top_k': config_dict['claude']['top_k'],
                 'max_tokens': config_dict['claude']['max_tokens']
             },
-            prompt=Prompt().nl2commands()
+            prompt=prompt.nl2commands(text)
         )
     elif platform == CONFIG_SEC_QIANFAN:
         model = QianFanModel(
-            api_key=config_dict['qianfan']['api_key'], secret_key=config_dict['qianfan']['secret_key'],
+            api_key=config_dict['qianfan'][CONFIG_SEC_API_KEY], secret_key=config_dict['qianfan']['secret_key'],
             version=config_dict['qianfan']['model'],
             generation_config={
                 'temperature': config_dict['qianfan']['temperature'],
                 'top_p': config_dict['qianfan']['top_p'],
                 'max_output_tokens': config_dict['qianfan']['max_output_tokens']
             },
-            prompt=Prompt().nl2commands()
+            prompt=prompt.nl2commands(text)
         )
     elif platform == CONFIG_SEC_MISTRAL:
         model = MistralModel(
-            api_key=config_dict['mistral']['api_key'], version=config_dict['mistral']['model'],
+            api_key=config_dict['mistral'][CONFIG_SEC_API_KEY], version=config_dict['mistral']['model'],
             generation_config={
                 'temperature': config_dict['mistral']['temperature'],
                 'top_p': config_dict['mistral']['top_p'],
                 'max_tokens': config_dict['mistral']['max_tokens']
             },
-            prompt=Prompt().nl2commands()
+            prompt=prompt.nl2commands(text)
         )
     elif platform == CONFIG_SEC_QIANWEN:
         model = QianWenModel(
-            api_key=config_dict['qianwen']['api_key'], version=config_dict['qianwen']['model'],
+            api_key=config_dict['qianwen'][CONFIG_SEC_API_KEY], version=config_dict['qianwen']['model'],
             generation_config={
                 'temperature': config_dict['qianwen']['temperature'],
                 'top_p': config_dict['qianwen']['top_p'],
@@ -195,20 +203,30 @@ def generate(text):
                 'stop': config_dict['qianwen']['stop'],
                 'max_tokens': config_dict['qianwen']['max_tokens']
             },
-            prompt=Prompt().nl2commands()
+            prompt=prompt.nl2commands(text)
         )
     else:
         raise ValueError(f"Platform {platform} not supported.")
 
-    # generate the commands from the model, and execute if auto_execute is True
+        # generate the commands from the model, and execute if auto_execute is True
     with console.status(f"[cyan]Generating..."):
         command = model.to_command(text)
 
     if config_dict['general']['show_command'] == "True":
-        click.echo(f"Command: {command}")
+        console.log(f"Generated command: {command}")
 
     if config_dict['general']['auto_execute']:
-        subprocess.run(command, shell=True, text=True)
+        try:
+            subprocess.run(command, shell=True, text=True)
+        except KeyboardInterrupt:
+            pass
+        finally:
+            # add the query to the memory, eviction with the max size of 100.
+            if memory.count() > 100:  # TODO: should be able to set this number.
+                memory.delete()
+
+            if command != '':
+                memory.add_query(queries=[{"query": text, "response": command}])
 
 
 @cli.command()

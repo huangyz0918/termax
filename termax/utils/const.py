@@ -1,9 +1,13 @@
 CONFIG_SEC_GENERAL = 'general'
+CONFIG_SEC_API_KEY = 'api_key'
 CONFIG_LLM_LIST = ['OpenAI', 'Gemini', 'Claude', 'Mistral', 'Qianfan', 'Qianwen']
+
+DB_PATH = 'database'
+DB_COMMAND_HISTORY = 'history'
+DB_SYS_METRICS = 'system'
 
 # OpenAI
 CONFIG_SEC_OPENAI = 'openai'
-CONFIG_SEC_OPENAI_KEY = 'openai_key'
 
 # Gemini
 CONFIG_SEC_GEMINI = 'gemini'
