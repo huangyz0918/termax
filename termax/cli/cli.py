@@ -48,17 +48,18 @@ def build_config(general: bool = False):
     :return:
     """
     configuration = Config()
+    qa = QA()
     # configure the general configurations
     if general:
-        general_config = QA().general_qa()
+        general_config = qa.general_qa()
         configuration.write_general(general_config)
     else:
-        platform_config = QA().platform_qa()
+        platform_config = qa.platform_qa()
         configuration.write_platform(platform_config, platform=platform_config['platform'])
         
         if not configuration.config.has_section('general'):
             print("\nYou still haven't set the general configuration, please complete the following question.")
-            general_config = QA().general_qa()
+            general_config = qa.general_qa()
             configuration.write_general(general_config)
 
 
