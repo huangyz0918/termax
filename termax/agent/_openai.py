@@ -1,4 +1,4 @@
-from openai import OpenAI
+import importlib, warnings
 
 from .types import Model
 from termax.prompt import extract_shell_commands
@@ -6,6 +6,16 @@ from termax.prompt import extract_shell_commands
 
 class OpenAIModel(Model):
     def __init__(self, api_key, version, prompt, temperature):
+        spec = importlib.util.find_spec("openai")
+        if spec is not None:
+            from openai import OpenAI
+        else:
+            warnings.warn(
+                "It seems you didn't install openai. In order to enable the OpenAI client related features, "
+                "please make sure openai Python package has been installed. "
+                "More information, please refer to: https://openai.com/product"
+            )
+            exit(1)
         self.client = OpenAI(api_key=api_key)
         self.version = version
         self.chat_history = [

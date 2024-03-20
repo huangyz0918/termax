@@ -1,4 +1,4 @@
-import qianfan
+import importlib, warnings
 
 from .types import Model
 from termax.prompt import extract_shell_commands
@@ -6,6 +6,16 @@ from termax.prompt import extract_shell_commands
 
 class QianFanModel(Model):
     def __init__(self, api_key, secret_key, version, prompt, generation_config):
+        spec = importlib.util.find_spec("qianfan")
+        if spec is not None:
+            import qianfan
+        else:
+            warnings.warn(
+                "It seems you didn't install qianfan. In order to enable the QianFan client related features, "
+                "please make sure qianfan Python package has been installed. "
+                "More information, please refer to: https://cloud.baidu.com/doc/WENXINWORKSHOP/s/flfmc9do2"
+            )
+            exit(1)
         self.client = qianfan.ChatCompletion(ak=api_key, sk=secret_key)
         self.version = version
         self.prompt = prompt
