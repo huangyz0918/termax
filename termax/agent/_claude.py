@@ -1,4 +1,4 @@
-import anthropic
+import importlib, warnings
 
 from .types import Model
 from termax.prompt import extract_shell_commands
@@ -6,6 +6,16 @@ from termax.prompt import extract_shell_commands
 
 class ClaudeModel(Model):
     def __init__(self, api_key, version, prompt, generation_config):
+        spec = importlib.util.find_spec("anthropic")
+        if spec is not None:
+            import anthropic
+        else:
+            warnings.warn(
+                "It seems you didn't install anthropic. In order to enable the Anthropic client related features, "
+                "please make sure anthropic Python package has been installed. "
+                "More information, please refer to: https://www.anthropic.com/api"
+            )
+            exit(1)
         self.client = anthropic.Anthropic(api_key=api_key)
         self.version = version
         self.prompt = prompt
