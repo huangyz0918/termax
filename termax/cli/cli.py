@@ -208,7 +208,7 @@ def generate(text):
     else:
         raise ValueError(f"Platform {platform} not supported.")
 
-        # generate the commands from the model, and execute if auto_execute is True
+    # generate the commands from the model, and execute if auto_execute is True
     with console.status(f"[cyan]Generating..."):
         command = model.to_command(text)
 
