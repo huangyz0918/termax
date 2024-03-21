@@ -1,25 +1,22 @@
 import inquirer
 from termax.utils.const import *
 
-class QA:
+
+def qa_platform(model_list: dict = CONFIG_LLM_LIST):
     """
-    QA: Command Line Question Answering for Config Info.
+    qa_platform: ask the user to input the platform related configuration.
     """
-    
-    def __init__(self):
-        pass
-    
-    def platform_qa(self, model_list : str = CONFIG_LLM_LIST):
+    try:
         first_questions = [
             inquirer.List(
                 "platform",
                 message="What LLM (platform) are you setting?",
-                choices=model_list.keys(),
+                choices=model_list.keys()
             )
         ]
         answers_1 = inquirer.prompt(first_questions)
         selected_platform = answers_1['platform']
-        
+
         second_questions = [
             inquirer.Text(
                 CONFIG_SEC_API_KEY,
@@ -27,21 +24,29 @@ class QA:
             )
         ]
         answers_2 = inquirer.prompt(second_questions)
-        platform_config = {
-            "model": model_list[selected_platform],
-            "platform": selected_platform.lower(),
-            "api_key": answers_2[CONFIG_SEC_API_KEY] if answers_2 else None,
-            'temperature': 0.7,
-            'max_tokens' : 1500,
-            'top_p' : 1.0,
-            'top_k' : 32,
-            'stop_sequences' : 'None',
-            'candidate_count' : 1
-        }
-        
-        return platform_config
-    
-    def general_qa(self, model_list : str = CONFIG_LLM_LIST):
+        if answers_2:
+            return {
+                "model": model_list[selected_platform],
+                "platform": selected_platform.lower(),
+                "api_key": answers_2[CONFIG_SEC_API_KEY],
+                'temperature': 0.7,
+                'max_tokens': 1500,
+                'top_p': 1.0,
+                'top_k': 32,
+                'stop_sequences': 'None',
+                'candidate_count': 1
+            }
+        else:
+            return None
+    except TypeError:
+        return None
+
+
+def qa_general(model_list: dict = CONFIG_LLM_LIST):
+    """
+    qa_general: ask the user to input the general configuration.
+    """
+    try:
         exe_questions = [
             inquirer.List(
                 "platform",
@@ -63,9 +68,9 @@ class QA:
         general_config = {
             "platform": answers["platform"].lower(),
             "auto_execute": answers["auto_execute"],
-            "show_command": answers["show_command"] if answers["auto_execute"] == True else True
+            "show_command": answers["show_command"] if answers["auto_execute"] else True
         }
-        
+
         return general_config
-        
-        
+    except TypeError:
+        return None

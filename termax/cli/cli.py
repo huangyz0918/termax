@@ -6,7 +6,7 @@ from rich.console import Console
 import termax
 from termax.utils.const import *
 from termax.prompt import Prompt, Memory
-from termax.utils import Config, QA, CONFIG_PATH
+from termax.utils import Config, CONFIG_PATH, qa_general, qa_platform
 from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
 
 
@@ -14,6 +14,9 @@ class DefaultCommandGroup(click.Group):
     """allow a default command for a group"""
 
     def command(self, *args, **kwargs):
+        """
+        command: the command decorator for the group.
+        """
         default_command = kwargs.pop('default_command', False)
         if default_command and not args:
             kwargs['name'] = kwargs.get('name', 'termax/t')
@@ -31,6 +34,9 @@ class DefaultCommandGroup(click.Group):
         return decorator
 
     def resolve_command(self, ctx, args):
+        """
+        resolve_command: resolve the command.
+        """
         try:
             # test if the command parses
             return super(DefaultCommandGroup, self).resolve_command(ctx, args)
@@ -48,24 +54,28 @@ def build_config(general: bool = False):
     :return:
     """
     configuration = Config()
-    qa = QA()
     # configure the general configurations
     if general:
-        general_config = qa.general_qa()
-        configuration.write_general(general_config)
-    else:
-        platform_config = qa.platform_qa()
-        configuration.write_platform(platform_config, platform=platform_config['platform'])
-        
-        if not configuration.config.has_section('general'):
-            print("\nYou still haven't set the general configuration, please complete the following question.")
-            general_config = qa.general_qa()
+        general_config = qa_general()
+        if general_config:
             configuration.write_general(general_config)
+    else:
+        platform_config = qa_platform()
+        if platform_config:
+            configuration.write_platform(platform_config, platform=platform_config['platform'])
+
+            if not configuration.config.has_section('general'):
+                print("\nYou still haven't set the general configuration, please complete the following question.")
+                general_config = qa_general()
+                configuration.write_general(general_config)
 
 
 @click.group(cls=DefaultCommandGroup)
 @click.version_option(version=termax.__version__)
 def cli():
+    """
+    Termax: A CLI tool to generate and execute commands from natural language.
+    """
     pass
 
 
@@ -101,12 +111,13 @@ def generate(text):
         model = GeminiModel(
             api_key=config_dict['gemini'][CONFIG_SEC_API_KEY], version=config_dict['gemini']['model'],
             generation_config={
-                'stop_sequences': config_dict['gemini']['stop_sequences'] if config_dict['gemini']['stop_sequences'] != 'None' else None,
+                'stop_sequences': config_dict['gemini']['stop_sequences'] if config_dict['gemini'][
+                                                                                 'stop_sequences'] != 'None' else None,
                 'temperature': config_dict['gemini']['temperature'],
                 'top_p': config_dict['gemini']['top_p'],
                 'top_k': config_dict['gemini']['top_k'],
                 'candidate_count': config_dict['gemini']['candidate_count'],
-                'max_output_tokens': config_dict['gemini']['max_output_tokens']
+                'max_output_tokens': config_dict['gemini']['max_tokens']
             },
             prompt=prompt.nl2commands(text)
         )
@@ -114,7 +125,8 @@ def generate(text):
         model = ClaudeModel(
             api_key=config_dict['claude'][CONFIG_SEC_API_KEY], version=config_dict['claude']['model'],
             generation_config={
-                'stop_sequences': config_dict['claude']['stop_sequences'] if config_dict['claude']['stop_sequences'] != 'None' else None,
+                'stop_sequences': config_dict['claude']['stop_sequences'] if config_dict['claude'][
+                                                                                 'stop_sequences'] != 'None' else None,
                 'temperature': config_dict['claude']['temperature'],
                 'top_p': config_dict['claude']['top_p'],
                 'top_k': config_dict['claude']['top_k'],
@@ -150,7 +162,8 @@ def generate(text):
                 'temperature': config_dict['qianwen']['temperature'],
                 'top_p': config_dict['qianwen']['top_p'],
                 'top_k': config_dict['qianwen']['top_k'],
-                'stop': config_dict['qianwen']['stop_sequences'] if config_dict['qianwen']['stop_sequences'] != 'None' else None,
+                'stop': config_dict['qianwen']['stop_sequences'] if config_dict['qianwen'][
+                                                                        'stop_sequences'] != 'None' else None,
                 'max_tokens': config_dict['qianwen']['max_tokens']
             },
             prompt=prompt.nl2commands(text)
