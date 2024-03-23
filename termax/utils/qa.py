@@ -57,18 +57,23 @@ def qa_general(model_list: dict = CONFIG_LLM_LIST):
                 "auto_execute",
                 message="Do you want to execute the generated command automatically?",
                 default=True,
-            ),
-            inquirer.Confirm(
-                "show_command",
-                message="Do you want to show the generated command?",
-                default=False,
             )
         ]
         answers = inquirer.prompt(exe_questions)
+        if answers["auto_execute"]:
+            sc_question = [
+                inquirer.Confirm(
+                    "show_command",
+                    message="Do you want to show the generated command?",
+                    default=False,
+                )
+            ]
+            sc_answer = inquirer.prompt(sc_question)
+            
         general_config = {
             "platform": answers["platform"].lower(),
             "auto_execute": answers["auto_execute"],
-            "show_command": answers["show_command"] if answers["auto_execute"] else True
+            "show_command": sc_answer["show_command"] if answers["auto_execute"] else True
         }
 
         return general_config
