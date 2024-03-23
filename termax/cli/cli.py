@@ -6,7 +6,7 @@ from rich.console import Console
 import termax
 from termax.utils.const import *
 from termax.prompt import Prompt, Memory
-from termax.utils import Config, CONFIG_PATH, qa_general, qa_platform
+from termax.utils import Config, CONFIG_PATH, qa_general, qa_platform, qa_confirm
 from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
 
 
@@ -178,7 +178,7 @@ def generate(text):
     if config_dict['general']['show_command'] == "True":
         console.log(f"Generated command: {command}")
 
-    if config_dict['general']['auto_execute']:
+    if config_dict['general']['auto_execute'] == "True" or qa_confirm():
         try:
             subprocess.run(command, shell=True, text=True)
         except KeyboardInterrupt:
@@ -190,6 +190,7 @@ def generate(text):
 
             if command != '':
                 memory.add_query(queries=[{"query": text, "response": command}])
+        
 
 
 @cli.command()

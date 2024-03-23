@@ -74,3 +74,20 @@ def qa_general(model_list: dict = CONFIG_LLM_LIST):
         return general_config
     except TypeError:
         return None
+
+
+def qa_confirm():
+    """
+    qa_execute: ask the user confirm whether to execute the generated commmand.
+    """
+    try:
+        exe_questions = [
+            inquirer.List('execute',
+                message="Choose your action:",
+                choices=[('Execute', True), ('Abort', False)],
+                carousel=False)
+        ]
+        answers = inquirer.prompt(exe_questions)
+        return answers["execute"]
+    except TypeError:
+        return None
