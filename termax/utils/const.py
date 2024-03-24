@@ -1,4 +1,5 @@
 CONFIG_SEC_GENERAL = 'general'
+CONFIG_SEC_DATABASE = 'database'
 CONFIG_SEC_API_KEY = 'api_key'
 CONFIG_LLM_LIST = {
     'OpenAI': 'gpt-3.5-turbo',

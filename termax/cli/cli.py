@@ -6,7 +6,7 @@ from rich.console import Console
 import termax
 from termax.utils.const import *
 from termax.prompt import Prompt, Memory
-from termax.utils import Config, CONFIG_PATH, qa_general, qa_platform, qa_confirm
+from termax.utils import Config, CONFIG_PATH, qa_general, qa_platform, qa_confirm, qa_database
 from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
 
 memory = Memory()
@@ -48,7 +48,7 @@ class DefaultCommandGroup(click.Group):
             return super(DefaultCommandGroup, self).resolve_command(ctx, args)
 
 
-def build_config(general: bool = False):
+def build_config(general: bool = False, database: bool = False):
     """
     build_config: build the configuration for Termax.
     Args:
@@ -61,7 +61,13 @@ def build_config(general: bool = False):
         general_config = qa_general()
         if general_config:
             configuration.write_general(general_config)
-    else:
+    # configure the database configurations
+    if database:
+        database_config = qa_database()
+        if database_config:
+            configuration.write_database(database_config)
+    # configure the platform configurations   
+    if not (general or database):
         platform_config = qa_platform()
         if platform_config:
             configuration.write_platform(platform_config, platform=platform_config['platform'])
@@ -179,6 +185,7 @@ def generate(text):
     if config_dict['general']['show_command'] == "True":
         console.log(f"Generated command: {command}")
 
+
     if config_dict['general']['auto_execute'] == "True" or qa_confirm():
         try:
             subprocess.run(command, shell=True, text=True)
@@ -186,17 +193,17 @@ def generate(text):
             pass
         finally:
             # add the query to the memory, eviction with the max size of 100.
-            if memory.count() > 100:  # TODO: should be able to set this number.
+            if memory.count() > int(config_dict['database']['storage_size']): 
                 memory.delete()
 
             if command != '':
                 memory.add_query(queries=[{"query": text, "response": command}])
 
-
 @cli.command()
 @click.option('--general', '-g', is_flag=True, help="Set up the general configuration for Termax.")
-def config(general):
+@click.option('--database', '-d', is_flag=True, help="Set up the database configuration for Termax.")
+def config(general, database):
     """
     Set up the global configuration for Termax.
     """
-    build_config(general)
+    build_config(general, database)

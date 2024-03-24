@@ -79,6 +79,27 @@ def qa_general(model_list: dict = CONFIG_LLM_LIST):
         return general_config
     except TypeError:
         return None
+    
+
+def qa_database():
+    """
+    qa_database: ask the user to input the database configuration.
+    """
+    try:
+        exe_questions = [
+            inquirer.Text(
+                "storage_size",
+                message="What storage size do you for historical commands?",
+                default='100'
+            )
+        ]
+        answers = inquirer.prompt(exe_questions)
+        database_config = {
+            "storage_size": int(answers['storage_size'])
+        }
+        return database_config
+    except ValueError:
+        return None
 
 
 def qa_confirm():
