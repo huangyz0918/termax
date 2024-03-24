@@ -1,7 +1,8 @@
-import importlib, warnings
+import warnings
+import importlib
 
-from .types import Model
 from termax.prompt import extract_shell_commands
+from .types import Model
 
 
 class MistralModel(Model):
