@@ -10,7 +10,7 @@ class Prompt:
         self.path_metadata = get_path_metadata()
         self.command_history = get_command_history()
 
-        # shae the same memory instance.
+        # share the same memory instance.
         if memory is None:
             self.memory = Memory()
         else:

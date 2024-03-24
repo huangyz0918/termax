@@ -9,6 +9,8 @@ from termax.prompt import Prompt, Memory
 from termax.utils import Config, CONFIG_PATH, qa_general, qa_platform, qa_confirm
 from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
 
+memory = Memory()
+
 
 class DefaultCommandGroup(click.Group):
     """allow a default command for a group"""
@@ -85,7 +87,6 @@ def generate(text):
     """
     This function will call and generate the commands from LLM
     """
-    memory = Memory()
     console = Console()
     text = " ".join(text)
     configuration = Config()
@@ -190,7 +191,6 @@ def generate(text):
 
             if command != '':
                 memory.add_query(queries=[{"query": text, "response": command}])
-        
 
 
 @cli.command()
