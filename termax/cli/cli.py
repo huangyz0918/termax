@@ -72,10 +72,13 @@ def build_config(general: bool = False, database: bool = False):
         if platform_config:
             configuration.write_platform(platform_config, platform=platform_config['platform'])
 
-            if not configuration.config.has_section('general'):
-                print("\nYou still haven't set the general configuration, please complete the following question.")
-                general_config = qa_general()
-                configuration.write_general(general_config)
+    if not configuration.config.has_section('general'):
+        click.echo("\nGeneral section not found. Running config setup...")
+        general_config = qa_general()
+        configuration.write_general(general_config)
+    if not configuration.config.has_section(CONFIG_SEC_DATABASE):
+        click.echo("\nDatabase section not found. Running config setup...")
+        configuration.write_database({"storage_size": 100})
 
 
 @click.group(cls=DefaultCommandGroup)
@@ -108,6 +111,11 @@ def generate(text):
     prompt = Prompt(memory)
     config_dict = configuration.read()
     platform = config_dict['general']['platform']
+    if not configuration.config.has_section(platform):
+        click.echo(f"Platform {platform} section not found. Running config setup...")
+        build_config()
+        config_dict = configuration.read()
+
     if platform == CONFIG_SEC_OPENAI:
         model = OpenAIModel(
             api_key=config_dict['openai'][CONFIG_SEC_API_KEY], version=config_dict['openai']['model'],
