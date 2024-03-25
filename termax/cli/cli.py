@@ -61,15 +61,16 @@ def build_config(general: bool = False):
         general_config = qa_general()
         if general_config:
             configuration.write_general(general_config)
+    # configure the platform configurations   
     else:
         platform_config = qa_platform()
         if platform_config:
             configuration.write_platform(platform_config, platform=platform_config['platform'])
 
-            if not configuration.config.has_section('general'):
-                print("\nYou still haven't set the general configuration, please complete the following question.")
-                general_config = qa_general()
-                configuration.write_general(general_config)
+    if not configuration.config.has_section(CONFIG_SEC_GENERAL):
+        click.echo("\nGeneral section not found. Running config setup...")
+        general_config = qa_general()
+        configuration.write_general(general_config)
 
 
 @click.group(cls=DefaultCommandGroup)
@@ -102,6 +103,11 @@ def generate(text):
     prompt = Prompt(memory)
     config_dict = configuration.read()
     platform = config_dict['general']['platform']
+    if not configuration.config.has_section(platform):
+        click.echo(f"Platform {platform} section not found. Running config setup...")
+        build_config()
+        config_dict = configuration.read()
+
     if platform == CONFIG_SEC_OPENAI:
         model = OpenAIModel(
             api_key=config_dict['openai'][CONFIG_SEC_API_KEY], version=config_dict['openai']['model'],
@@ -179,19 +185,19 @@ def generate(text):
     if config_dict['general']['show_command'] == "True":
         console.log(f"Generated command: {command}")
 
+
     if config_dict['general']['auto_execute'] == "True" or qa_confirm():
         try:
             subprocess.run(command, shell=True, text=True)
         except KeyboardInterrupt:
             pass
         finally:
-            # add the query to the memory, eviction with the max size of 100.
-            if memory.count() > 100:  # TODO: should be able to set this number.
+            # add the query to the memory, eviction with the max size of 2000.
+            if memory.count() > int(config_dict['database']['storage_size']): 
                 memory.delete()
 
             if command != '':
                 memory.add_query(queries=[{"query": text, "response": command}])
-
 
 @cli.command()
 @click.option('--general', '-g', is_flag=True, help="Set up the general configuration for Termax.")
