@@ -67,7 +67,7 @@ def build_config(general: bool = False):
         if platform_config:
             configuration.write_platform(platform_config, platform=platform_config['platform'])
 
-    if not configuration.config.has_section('general'):
+    if not configuration.config.has_section(CONFIG_SEC_GENERAL):
         click.echo("\nGeneral section not found. Running config setup...")
         general_config = qa_general()
         configuration.write_general(general_config)
