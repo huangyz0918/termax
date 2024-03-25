@@ -6,7 +6,7 @@ from rich.console import Console
 import termax
 from termax.utils.const import *
 from termax.prompt import Prompt, Memory
-from termax.utils import Config, CONFIG_PATH, qa_general, qa_platform, qa_confirm, qa_database
+from termax.utils import Config, CONFIG_PATH, qa_general, qa_platform, qa_confirm
 from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
 
 memory = Memory()
