@@ -71,8 +71,6 @@ def build_config(general: bool = False):
         click.echo("\nGeneral section not found. Running config setup...")
         general_config = qa_general()
         configuration.write_general(general_config)
-    if not configuration.config.has_section(CONFIG_SEC_DATABASE):
-        configuration.write_database({"storage_size": 2000})
 
 
 @click.group(cls=DefaultCommandGroup)

@@ -90,19 +90,3 @@ class Config:
         with open(self.config_path, 'w') as configfile:
             self.config.write(configfile)
             self.reload_config(self.config_path)
-
-    def write_database(self, config_dict: dict):
-        """
-        write_database: indicate and generate the database related configuration.
-
-        """
-        # create the configuration to connect with OpenAI.
-        if not self.config.has_section(CONFIG_SEC_DATABASE):
-            self.config.add_section(CONFIG_SEC_DATABASE)
-
-        self.config[CONFIG_SEC_DATABASE] = config_dict
-
-        # save the new configuration and reload.
-        with open(self.config_path, 'w') as configfile:
-            self.config.write(configfile)
-            self.reload_config(self.config_path)

@@ -73,7 +73,8 @@ def qa_general(model_list: dict = CONFIG_LLM_LIST):
         general_config = {
             "platform": answers["platform"].lower(),
             "auto_execute": answers["auto_execute"],
-            "show_command": sc_answer["show_command"] if answers["auto_execute"] else True
+            "show_command": sc_answer["show_command"] if answers["auto_execute"] else True,
+            "storage_size": 2000
         }
 
         return general_config
