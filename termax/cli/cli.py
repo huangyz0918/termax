@@ -48,7 +48,7 @@ class DefaultCommandGroup(click.Group):
             return super(DefaultCommandGroup, self).resolve_command(ctx, args)
 
 
-def build_config(general: bool = False, database: bool = False):
+def build_config(general: bool = False):
     """
     build_config: build the configuration for Termax.
     Args:
@@ -61,13 +61,8 @@ def build_config(general: bool = False, database: bool = False):
         general_config = qa_general()
         if general_config:
             configuration.write_general(general_config)
-    # configure the database configurations
-    if database:
-        database_config = qa_database()
-        if database_config:
-            configuration.write_database(database_config)
     # configure the platform configurations   
-    if not (general or database):
+    else:
         platform_config = qa_platform()
         if platform_config:
             configuration.write_platform(platform_config, platform=platform_config['platform'])
@@ -77,8 +72,7 @@ def build_config(general: bool = False, database: bool = False):
         general_config = qa_general()
         configuration.write_general(general_config)
     if not configuration.config.has_section(CONFIG_SEC_DATABASE):
-        click.echo("\nDatabase section not found. Running config setup...")
-        configuration.write_database({"storage_size": 100})
+        configuration.write_database({"storage_size": 2000})
 
 
 @click.group(cls=DefaultCommandGroup)
@@ -200,7 +194,7 @@ def generate(text):
         except KeyboardInterrupt:
             pass
         finally:
-            # add the query to the memory, eviction with the max size of 100.
+            # add the query to the memory, eviction with the max size of 2000.
             if memory.count() > int(config_dict['database']['storage_size']): 
                 memory.delete()
 
@@ -209,9 +203,8 @@ def generate(text):
 
 @cli.command()
 @click.option('--general', '-g', is_flag=True, help="Set up the general configuration for Termax.")
-@click.option('--database', '-d', is_flag=True, help="Set up the database configuration for Termax.")
-def config(general, database):
+def config(general):
     """
     Set up the global configuration for Termax.
     """
-    build_config(general, database)
+    build_config(general)
