@@ -185,7 +185,6 @@ def generate(text):
     if config_dict['general']['show_command'] == "True":
         console.log(f"Generated command: {command}")
 
-
     if config_dict['general']['auto_execute'] == "True" or qa_confirm():
         try:
             subprocess.run(command, shell=True, text=True)
@@ -193,11 +192,12 @@ def generate(text):
             pass
         finally:
             # add the query to the memory, eviction with the max size of 2000.
-            if memory.count() > int(config_dict['database']['storage_size']): 
+            if memory.count() > int(config_dict['database']['storage_size']):
                 memory.delete()
 
             if command != '':
                 memory.add_query(queries=[{"query": text, "response": command}])
+
 
 @cli.command()
 @click.option('--general', '-g', is_flag=True, help="Set up the general configuration for Termax.")
