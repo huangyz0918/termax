@@ -16,6 +16,7 @@ class QianWenModel(Model):
                 "More information, "
                 "please refer to: https://help.aliyun.com/zh/dashscope/developer-reference/api-details"
             )
+
         dashscope.api_key = api_key
         self.version = version
         self.chat_history = [{'role': 'system', 'content': prompt},

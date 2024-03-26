@@ -15,6 +15,7 @@ class OpenAIModel(Model):
                 "please make sure openai Python package has been installed. "
                 "More information, please refer to: https://openai.com/product"
             )
+
         self.client = OpenAI(api_key=api_key)
         self.version = version
         self.chat_history = [

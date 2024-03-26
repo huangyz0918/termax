@@ -15,6 +15,7 @@ class QianFanModel(Model):
                 "please make sure qianfan Python package has been installed. "
                 "More information, please refer to: https://cloud.baidu.com/doc/WENXINWORKSHOP/s/flfmc9do2"
             )
+
         self.client = qianfan.ChatCompletion(ak=api_key, sk=secret_key)
         self.version = version
         self.prompt = prompt

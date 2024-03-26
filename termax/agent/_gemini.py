@@ -12,13 +12,13 @@ class GeminiModel(Model):
             import google.generativeai as genai
             import google.ai.generativelanguage as glm
         else:
-            warnings.warn(
+            raise ImportError(
                 "It seems you didn't install google.generativeai. "
                 "In order to enable the Gemini client related features, "
                 "please make sure google.generativeai Python package has been installed. "
                 "More information, please refer to: https://ai.google.dev/"
             )
-            exit(1)
+
         self.client = genai.configure(api_key=api_key)
         self.version = version
         self.chat_history = [glm.Content(parts=[glm.Part(text=prompt)], role="user"),
