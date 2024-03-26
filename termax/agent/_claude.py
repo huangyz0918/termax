@@ -34,3 +34,16 @@ class ClaudeModel(Model):
         )
         response = message.content[0].text
         return extract_shell_commands(response)
+    
+    def to_description(self, command):
+        message = self.client.messages.create(
+            model=self.version,
+            max_tokens=self.generation_config['max_tokens'],
+            temperature=self.generation_config['temperature'],
+            top_k=self.generation_config['top_k'],
+            top_p=self.generation_config['top_p'],
+            stop_sequences=self.generation_config['stop_sequences'],
+            messages=[{"role": "user", "content": f"Help me describe this command: {command}"}]
+        )
+        response = message.content[0].text
+        return response

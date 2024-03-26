@@ -35,3 +35,16 @@ class QianWenModel(Model):
         )
         response = message['output'].text
         return extract_shell_commands(response)
+    
+    def to_description(self, command):
+        message = dashscope.Generation.call(
+            model=self.version,
+            messages=[{'role': 'user', 'content': f"Help me describe this command: {command}"}],
+            max_tokens=self.generation_config['max_tokens'],
+            temperature=self.generation_config['temperature'],
+            top_k=self.generation_config['top_k'],
+            top_p=self.generation_config['top_p'],
+            stop=self.generation_config['stop'],
+        )
+        response = message['output'].text
+        return response

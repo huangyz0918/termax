@@ -34,3 +34,11 @@ class GeminiModel(Model):
         chat = model.start_chat(history=self.chat_history)
         response = chat.send_message(request, generation_config=self.generation_config).text
         return extract_shell_commands(response)
+    
+    def to_description(self, command):
+        model = genai.GenerativeModel(self.version)
+        chat = model.start_chat(history=[])
+        response = chat.send_message(f"Help me describe this command: {command}", 
+                            generation_config=self.generation_config).text
+        return response
+        

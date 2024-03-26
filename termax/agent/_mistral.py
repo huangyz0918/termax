@@ -34,3 +34,14 @@ class MistralModel(Model):
         )
         response = chat_response.choices[0].message.content
         return extract_shell_commands(response)
+    
+    def to_description(self, command):
+        chat_response = self.client.chat(
+            model=self.version,
+            messages=[ChatMessage(role="user", content=f"Help me describe this command: {command}")],
+            temperature=self.generation_config['temperature'],
+            top_p=self.generation_config['top_p'],
+            max_tokens=self.generation_config['max_tokens']
+        )
+        response = chat_response.choices[0].message.content
+        return response

@@ -39,3 +39,17 @@ class OpenAIModel(Model):
         )
         response = completion.choices[0].message.content
         return extract_shell_commands(response)
+    
+    def to_description(self, command):
+        completion = self.client.chat.completions.create(
+            model=self.version,
+            messages=[
+                {
+                    "role": "user",
+                    "content": f"Help me describe this command: {command}",
+                }
+            ],
+            temperature=self.temperature
+        )
+        response = completion.choices[0].message.content
+        return response
