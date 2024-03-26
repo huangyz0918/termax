@@ -1,4 +1,5 @@
-import importlib, warnings
+import warnings
+import importlib.util
 
 from .types import Model
 from termax.prompt import extract_shell_commands
@@ -12,7 +13,8 @@ class GeminiModel(Model):
             import google.ai.generativelanguage as glm
         else:
             warnings.warn(
-                "It seems you didn't install google.generativeai. In order to enable the Gemini client related features, "
+                "It seems you didn't install google.generativeai. "
+                "In order to enable the Gemini client related features, "
                 "please make sure google.generativeai Python package has been installed. "
                 "More information, please refer to: https://ai.google.dev/"
             )
@@ -34,11 +36,10 @@ class GeminiModel(Model):
         chat = model.start_chat(history=self.chat_history)
         response = chat.send_message(request, generation_config=self.generation_config).text
         return extract_shell_commands(response)
-    
+
     def to_description(self, command):
         model = genai.GenerativeModel(self.version)
         chat = model.start_chat(history=[])
-        response = chat.send_message(f"Help me describe this command: {command}", 
-                            generation_config=self.generation_config).text
+        response = chat.send_message(f"Help me describe this command: {command}",
+                                     generation_config=self.generation_config).text
         return response
-        

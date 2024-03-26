@@ -182,20 +182,30 @@ def generate(text):
 
     if config_dict['general']['show_command'] == "True":
         console.log(f"Generated command: {command}")
-    
-    def execute_command(command):
+
+    def execute_command(cmd: str):
+        """
+        execute_command: execute the command.
+        Args:
+            cmd: the command to execute.
+        """
         try:
-            subprocess.run(command, shell=True, text=True)
+            subprocess.run(cmd, shell=True, text=True)
         except KeyboardInterrupt:
             pass
         finally:
-            # add the query to the memory, eviction with the max size of 2000.
-            if memory.count() > int(config_dict['general']['storage_size']): 
+            # add the query to the memory, eviction with the default max size of 2000.
+            if config_dict.get(CONFIG_SEC_GENERAL).get('storage_size') is None:
+                storage_size = 2000
+            else:
+                storage_size = int(config_dict[CONFIG_SEC_GENERAL]['storage_size'])
+
+            if memory.count() > storage_size:
                 memory.delete()
 
-            if command != '':
-                memory.add_query(queries=[{"query": text, "response": command}])
-                
+            if cmd != '':
+                memory.add_query(queries=[{"query": text, "response": cmd}])
+
     if config_dict['general']['auto_execute'] == "True":
         execute_command(command)
     else:
@@ -206,8 +216,6 @@ def generate(text):
             with console.status(f"[cyan]Generating..."):
                 description = model.to_description(command)
             console.log(f"{description}")
-            
-            
 
 
 @cli.command()

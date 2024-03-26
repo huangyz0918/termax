@@ -1,4 +1,4 @@
-import importlib, warnings
+import importlib.util
 
 from .types import Model
 from termax.prompt import extract_shell_commands
@@ -10,12 +10,12 @@ class ClaudeModel(Model):
         if spec is not None:
             import anthropic
         else:
-            warnings.warn(
+            raise ImportError(
                 "It seems you didn't install anthropic. In order to enable the Anthropic client related features, "
                 "please make sure anthropic Python package has been installed. "
                 "More information, please refer to: https://www.anthropic.com/api"
             )
-            exit(1)
+
         self.client = anthropic.Anthropic(api_key=api_key)
         self.version = version
         self.prompt = prompt
@@ -34,7 +34,7 @@ class ClaudeModel(Model):
         )
         response = message.content[0].text
         return extract_shell_commands(response)
-    
+
     def to_description(self, command):
         message = self.client.messages.create(
             model=self.version,
