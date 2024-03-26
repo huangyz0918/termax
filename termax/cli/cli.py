@@ -109,35 +109,32 @@ def generate(text):
     if platform == CONFIG_SEC_OPENAI:
         model = OpenAIModel(
             api_key=config_dict['openai'][CONFIG_SEC_API_KEY], version=config_dict['openai']['model'],
-            temperature=float(config_dict['openai']['temperature']),
-            prompt=prompt.nl2commands(text)
+            temperature=float(config_dict['openai']['temperature'])
         )
     elif platform == CONFIG_SEC_GEMINI:
         model = GeminiModel(
             api_key=config_dict['gemini'][CONFIG_SEC_API_KEY], version=config_dict['gemini']['model'],
             generation_config={
-                'stop_sequences': config_dict['gemini']['stop_sequences'] if config_dict['gemini'][
-                                                                                 'stop_sequences'] != 'None' else None,
+                'stop_sequences': config_dict['gemini']['stop_sequences']
+                if config_dict['gemini']['stop_sequences'] != 'None' else None,
                 'temperature': config_dict['gemini']['temperature'],
                 'top_p': config_dict['gemini']['top_p'],
                 'top_k': config_dict['gemini']['top_k'],
                 'candidate_count': config_dict['gemini']['candidate_count'],
                 'max_output_tokens': config_dict['gemini']['max_tokens']
-            },
-            prompt=prompt.nl2commands(text)
+            }
         )
     elif platform == CONFIG_SEC_CLAUDE:
         model = ClaudeModel(
             api_key=config_dict['claude'][CONFIG_SEC_API_KEY], version=config_dict['claude']['model'],
             generation_config={
-                'stop_sequences': config_dict['claude']['stop_sequences'] if config_dict['claude'][
-                                                                                 'stop_sequences'] != 'None' else None,
+                'stop_sequences': config_dict['claude']['stop_sequences']
+                if config_dict['claude']['stop_sequences'] != 'None' else None,
                 'temperature': config_dict['claude']['temperature'],
                 'top_p': config_dict['claude']['top_p'],
                 'top_k': config_dict['claude']['top_k'],
                 'max_tokens': config_dict['claude']['max_tokens']
-            },
-            prompt=prompt.nl2commands(text)
+            }
         )
     elif platform == CONFIG_SEC_QIANFAN:
         model = QianFanModel(
@@ -147,8 +144,7 @@ def generate(text):
                 'temperature': config_dict['qianfan']['temperature'],
                 'top_p': config_dict['qianfan']['top_p'],
                 'max_output_tokens': config_dict['qianfan']['max_tokens']
-            },
-            prompt=prompt.nl2commands(text)
+            }
         )
     elif platform == CONFIG_SEC_MISTRAL:
         model = MistralModel(
@@ -157,8 +153,7 @@ def generate(text):
                 'temperature': config_dict['mistral']['temperature'],
                 'top_p': config_dict['mistral']['top_p'],
                 'max_tokens': config_dict['mistral']['max_tokens']
-            },
-            prompt=prompt.nl2commands(text)
+            }
         )
     elif platform == CONFIG_SEC_QIANWEN:
         model = QianWenModel(
@@ -167,18 +162,17 @@ def generate(text):
                 'temperature': config_dict['qianwen']['temperature'],
                 'top_p': config_dict['qianwen']['top_p'],
                 'top_k': config_dict['qianwen']['top_k'],
-                'stop': config_dict['qianwen']['stop_sequences'] if config_dict['qianwen'][
-                                                                        'stop_sequences'] != 'None' else None,
+                'stop': config_dict['qianwen']['stop_sequences']
+                if config_dict['qianwen']['stop_sequences'] != 'None' else None,
                 'max_tokens': config_dict['qianwen']['max_tokens']
-            },
-            prompt=prompt.nl2commands(text)
+            }
         )
     else:
         raise ValueError(f"Platform {platform} not supported.")
 
     # generate the commands from the model, and execute if auto_execute is True
     with console.status(f"[cyan]Generating..."):
-        command = model.to_command(text)
+        command = model.to_command(prompt.gen_commands(text), text)
 
     if config_dict['general']['show_command'] == "True":
         console.log(f"Generated command: {command}")
@@ -214,7 +208,7 @@ def generate(text):
             execute_command(command)
         elif choice == 2:
             with console.status(f"[cyan]Generating..."):
-                description = model.to_description(command)
+                description = model.to_description(prompt.explain_commands(), command)
             console.log(f"{description}")
 
 

@@ -60,6 +60,8 @@ class Config:
         """
         write_general: write the general configuration.
 
+        @param config_dict: the configuration dictionary.
+
         """
         if not self.config.has_section(CONFIG_SEC_GENERAL):
             self.config.add_section(CONFIG_SEC_GENERAL)
@@ -78,6 +80,9 @@ class Config:
     ):
         """
         write_platform: indicate and generate the platform related configuration.
+
+        @param config_dict: the configuration dictionary.
+        @param platform: the platform to configure.
 
         """
         # create the configuration to connect with OpenAI.

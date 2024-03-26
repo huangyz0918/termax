@@ -5,10 +5,20 @@ from termax.prompt import extract_shell_commands
 
 
 class OpenAIModel(Model):
-    def __init__(self, api_key, version, prompt, temperature):
-        spec = importlib.util.find_spec("openai")
+    def __init__(self, api_key, version, temperature):
+        """
+        Initialize the OpenAI model.
+        Args:
+            api_key (str): The OpenAI API key.
+            version (str): The model version.
+            temperature (float): The temperature value.
+        """
+        super().__init__()
+
+        dependency = "openai"
+        spec = importlib.util.find_spec(dependency)
         if spec is not None:
-            from openai import OpenAI
+            self.OpenAI = importlib.import_module(dependency).OpenAI
         else:
             raise ImportError(
                 "It seems you didn't install openai. In order to enable the OpenAI client related features, "
@@ -16,37 +26,49 @@ class OpenAIModel(Model):
                 "More information, please refer to: https://openai.com/product"
             )
 
-        self.client = OpenAI(api_key=api_key)
         self.version = version
-        self.chat_history = [
+        self.temperature = temperature
+        self.client = self.OpenAI(api_key=api_key)
+
+    def to_command(self, prompt, text):
+        """
+        Generate a command based on the prompt and text.
+        Args:
+            prompt (str): The prompt.
+            text (str): The text.
+        """
+        chat_history = [
             {
                 "role": "system",
                 "content": prompt
             },
             {
                 "role": "user",
-                "content": None,
+                "content": text,
             }
         ]
-        self.temperature = temperature
 
-    def to_command(self, request):
-        self.chat_history[1]['content'] = request
         completion = self.client.chat.completions.create(
             model=self.version,
-            messages=self.chat_history,
+            messages=chat_history,
             temperature=self.temperature
         )
         response = completion.choices[0].message.content
         return extract_shell_commands(response)
 
-    def to_description(self, command):
+    def to_description(self, prompt, command):
+        """
+        Generate a description based on the prompt and command.
+        Args:
+            prompt (str): The prompt.
+            command (str): The command.
+        """
         completion = self.client.chat.completions.create(
             model=self.version,
             messages=[
                 {
                     "role": "user",
-                    "content": f"Help me describe this command: {command}",
+                    "content": f"{prompt} {command}",
                 }
             ],
             temperature=self.temperature

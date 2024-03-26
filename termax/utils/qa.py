@@ -5,6 +5,9 @@ from termax.utils.const import *
 def qa_platform(model_list: dict = CONFIG_LLM_LIST):
     """
     qa_platform: ask the user to input the platform related configuration.
+
+    Args:
+        model_list: the list of models.
     """
     try:
         first_questions = [
@@ -45,6 +48,9 @@ def qa_platform(model_list: dict = CONFIG_LLM_LIST):
 def qa_general(model_list: dict = CONFIG_LLM_LIST):
     """
     qa_general: ask the user to input the general configuration.
+
+    Args:
+        model_list: the list of models.
     """
     try:
         exe_questions = [
@@ -60,6 +66,7 @@ def qa_general(model_list: dict = CONFIG_LLM_LIST):
             )
         ]
         answers = inquirer.prompt(exe_questions)
+        sc_answer = {"show_command": True}
         if answers["auto_execute"]:
             sc_question = [
                 inquirer.Confirm(
@@ -69,11 +76,11 @@ def qa_general(model_list: dict = CONFIG_LLM_LIST):
                 )
             ]
             sc_answer = inquirer.prompt(sc_question)
-            
+
         general_config = {
             "platform": answers["platform"].lower(),
             "auto_execute": answers["auto_execute"],
-            "show_command": sc_answer["show_command"] if answers["auto_execute"] else True,
+            "show_command": sc_answer["show_command"],
             "storage_size": 2000
         }
 
@@ -88,10 +95,12 @@ def qa_confirm():
     """
     try:
         exe_questions = [
-            inquirer.List('execute',
+            inquirer.List(
+                'execute',
                 message="Choose your action",
                 choices=[('Execute', 0), ('Abort', 1), ('Describe', 2)],
-                carousel=False)
+                carousel=False
+            )
         ]
         answers = inquirer.prompt(exe_questions)
         return answers["execute"]

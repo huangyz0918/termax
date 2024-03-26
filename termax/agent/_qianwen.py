@@ -1,14 +1,26 @@
 import importlib.util
 
 from .types import Model
+from termax.utils.const import *
 from termax.prompt import extract_shell_commands
 
 
 class QianWenModel(Model):
-    def __init__(self, api_key, version, prompt, generation_config):
-        spec = importlib.util.find_spec("dashscope")
+
+    def __init__(self, api_key, version, generation_config):
+        """
+        Initialize the QianWen model.
+        Args:
+            api_key (str): The QianWen API key.
+            version (str): The model version.
+            generation_config (dict): The generation configuration.
+        """
+        super().__init__()
+
+        dependency = "dashscope"
+        spec = importlib.util.find_spec(dependency)
         if spec is not None:
-            import dashscope
+            self.dashscope = importlib.import_module(dependency)
         else:
             raise ImportError(
                 "It seems you didn't install dashscope. In order to enable the QianWen client related features, "
@@ -17,17 +29,26 @@ class QianWenModel(Model):
                 "please refer to: https://help.aliyun.com/zh/dashscope/developer-reference/api-details"
             )
 
-        dashscope.api_key = api_key
         self.version = version
-        self.chat_history = [{'role': 'system', 'content': prompt},
-                             {'role': 'user', 'content': None}]
+        self.model_type = CONFIG_SEC_QIANWEN
+        self.dashscope.api_key = api_key
         self.generation_config = generation_config
 
-    def to_command(self, request):
-        self.chat_history[1]['content'] = request
-        message = dashscope.Generation.call(
+    def to_command(self, prompt, text):
+        """
+        Generate a command based on the prompt and text.
+        Args:
+            prompt (str): The prompt.
+            text (str): The text.
+        """
+        chat_history = [
+            {'role': 'system', 'content': prompt},
+            {'role': 'user', 'content': text}
+        ]
+
+        message = self.dashscope.Generation.call(
             model=self.version,
-            messages=self.chat_history,
+            messages=chat_history,
             max_tokens=self.generation_config['max_tokens'],
             temperature=self.generation_config['temperature'],
             top_k=self.generation_config['top_k'],
@@ -37,10 +58,16 @@ class QianWenModel(Model):
         response = message['output'].text
         return extract_shell_commands(response)
 
-    def to_description(self, command):
-        message = dashscope.Generation.call(
+    def to_description(self, prompt, command):
+        """
+        Generate a description based on the prompt and command.
+        Args:
+            prompt (str): The prompt.
+            command (str): The command.
+        """
+        message = self.dashscope.Generation.call(
             model=self.version,
-            messages=[{'role': 'user', 'content': f"Help me describe this command: {command}"}],
+            messages=[{'role': 'user', 'content': f"{prompt} {command}"}],
             max_tokens=self.generation_config['max_tokens'],
             temperature=self.generation_config['temperature'],
             top_k=self.generation_config['top_k'],

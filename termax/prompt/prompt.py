@@ -5,6 +5,11 @@ from termax.utils import CONFIG_SEC_OPENAI
 
 class Prompt:
     def __init__(self, memory):
+        """
+        Prompt for Termax: the prompt for the LLMs.
+        Args:
+            memory: the memory instance.
+        """
         # TODO: make the sync of system related metadata once happened at the initialization
         self.system_metadata = get_system_metadata()
         self.path_metadata = get_path_metadata()
@@ -16,7 +21,25 @@ class Prompt:
         else:
             self.memory = memory
 
-    def nl2commands(self, text: str, model: str = CONFIG_SEC_OPENAI):
+    def explain_commands(self, model: str = CONFIG_SEC_OPENAI):
+        """
+        [Prompt] Explain the shell commands.
+        Args:
+            model: the model to use, default is OpenAI.
+        """
+        if model == CONFIG_SEC_OPENAI:
+            return f"Help me describe this command:"
+        else:
+            # TODO: add more models specific prompt
+            return f"Help me describe this command:"
+
+    def gen_commands(self, text: str, model: str = CONFIG_SEC_OPENAI):
+        """
+        [Prompt] Convert the natural language text to the commands.
+        Args:
+            text: the natural language text.
+            model: the model to use, default is OpenAI.
+        """
         # query the history database to get similar samples
         samples = self.memory.query([text], n_results=5)
         metadatas = samples['metadatas'][0]
@@ -35,7 +58,6 @@ class Prompt:
 
         # refresh the metadata
         self.command_history = get_command_history()
-        # TODO: add more models specific prompt
         if model == CONFIG_SEC_OPENAI:
             return f"""
             You are an shell expert, you can convert this text to shell commands.\n
@@ -64,5 +86,36 @@ class Prompt:
             
             The output shell commands is (please replace the `{{commands}}` with the actual commands):
             
+            Commands: ${{commands}}
+            """
+        else:
+            # TODO: add more models specific prompt
+            return f"""
+            You are an shell expert, you can convert this text to shell commands.\n
+
+            1. Please provide only shell commands for os without any description.
+            2. Ensure the output is a valid shell command.
+            3. If multiple steps required try to combine them together.
+
+            Here are some rules you need to follow:\n
+
+            1. The commands should be able to run on the current system according to the system information.
+            2. The files in the commands (if any) should be available in the path, according to the path information.
+            3. The CLI application should be installed in the system (check the path information).
+
+            Here are some information you may need to know:\n
+
+            \nCurrent system information (in dict format): {self.system_metadata} \n
+
+            \nThe user's system PATH information (in dict format): {self.path_metadata} \n
+
+            \nThe user's command history (in dict format): {self.command_history} \n
+
+            Here are some similar commands generated before:\n
+
+            {sample_string}
+
+            The output shell commands is (please replace the `{{commands}}` with the actual commands):
+
             Commands: ${{commands}}
             """
