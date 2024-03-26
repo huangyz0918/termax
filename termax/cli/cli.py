@@ -56,13 +56,11 @@ def build_config(general: bool = False):
     :return:
     """
     configuration = Config()
-    # configure the general configurations
-    if general:
+    if general:  # configure the general configurations
         general_config = qa_general()
         if general_config:
             configuration.write_general(general_config)
-    # configure the platform configurations   
-    else:
+    else:  # configure the platform configurations
         platform_config = qa_platform()
         if platform_config:
             configuration.write_platform(platform_config, platform=platform_config['platform'])
