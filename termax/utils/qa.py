@@ -89,8 +89,8 @@ def qa_confirm():
     try:
         exe_questions = [
             inquirer.List('execute',
-                message="Choose your action:",
-                choices=[('Execute', True), ('Abort', False)],
+                message="Choose your action",
+                choices=[('Execute', 0), ('Abort', 1), ('Describe', 2)],
                 carousel=False)
         ]
         answers = inquirer.prompt(exe_questions)

@@ -32,3 +32,14 @@ class QianFanModel(Model):
         )
         response = message['body']['result']
         return extract_shell_commands(response)
+    
+    def to_description(self, command):
+        message = self.client.do(
+            model=self.version,
+            messages=[{"role": "user", "content": f"Help me describe this command: {command}"}],
+            temperature=self.generation_config['temperature'],
+            top_p=self.generation_config['top_p'],
+            max_output_tokens=self.generation_config['max_output_tokens']
+        )
+        response = message['body']['result']
+        return response

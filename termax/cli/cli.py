@@ -184,20 +184,32 @@ def generate(text):
 
     if config_dict['general']['show_command'] == "True":
         console.log(f"Generated command: {command}")
-
-
-    if config_dict['general']['auto_execute'] == "True" or qa_confirm():
+    
+    def execute_command(command):
         try:
             subprocess.run(command, shell=True, text=True)
         except KeyboardInterrupt:
             pass
         finally:
             # add the query to the memory, eviction with the max size of 2000.
-            if memory.count() > int(config_dict['database']['storage_size']): 
+            if memory.count() > int(config_dict['general']['storage_size']): 
                 memory.delete()
 
             if command != '':
                 memory.add_query(queries=[{"query": text, "response": command}])
+                
+    if config_dict['general']['auto_execute'] == "True":
+        execute_command(command)
+    else:
+        choice = qa_confirm()
+        if choice == 0:
+            execute_command(command)
+        elif choice == 2:
+            with console.status(f"[cyan]Generating..."):
+                description = model.to_description(command)
+            console.log(f"{description}")
+            
+            
 
 @cli.command()
 @click.option('--general', '-g', is_flag=True, help="Set up the general configuration for Termax.")
