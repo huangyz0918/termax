@@ -23,14 +23,15 @@ class Prompt:
         else:
             self.memory = memory
 
-    def gen_suggestions(self, model: str = CONFIG_SEC_OPENAI):
+    def gen_suggestions(self, ref_num: int = 10, model: str = CONFIG_SEC_OPENAI):
         """
         [Prompt] Generate the suggestions based on the environment and the history.
         Args:
+            ref_num: the number of the references to use.
             model: the model to use, default is OpenAI.
         """
 
-        history = get_command_history(5)['shell_command_history']
+        history = get_command_history(ref_num)['shell_command_history']
         history_string = ""
         for i in history:
             if i['command'] == "t guess" or i['command'] == "termax guess":
@@ -61,10 +62,6 @@ class Prompt:
             5. Invisible files under the current directory: {files['invisible_files']}
             6. Invisible directories under the current directory: {files['invisible_directory']}
             
-            [INFORMATION] The user's command history:\n
-            
-            {history_string}
-            
             [INFORMATION] The current time: {datetime.now().isoformat()}\n
             
             Here are some rules you need to follow:\n
@@ -72,7 +69,7 @@ class Prompt:
             1. Please provide only shell commands for os without any description.
             2. Ensure the output is a valid shell command.
             
-            Commands: ${{command}}
+            Commands: ${{commands}}
             
             """
         else:
@@ -94,10 +91,6 @@ class Prompt:
             5. Invisible files under the current directory: {files['invisible_files']}
             6. Invisible directories under the current directory: {files['invisible_directory']}
 
-            [INFORMATION] The user's command history:\n
-
-            {history_string}
-
             [INFORMATION] The current time: {datetime.now().isoformat()}\n
 
             Here are some rules you need to follow:\n
@@ -105,7 +98,7 @@ class Prompt:
             1. Please provide only shell commands for os without any description.
             2. Ensure the output is a valid shell command.
 
-            Commands: ${{command}}
+           Commands: ${{commands}}
 
             """
 

@@ -6,6 +6,7 @@ from rich.console import Console
 import termax
 from termax.utils.const import *
 from termax.prompt import Prompt, Memory
+from termax.utils.metadata import get_command_history
 from termax.utils import Config, CONFIG_PATH, qa_general, qa_platform, qa_confirm
 from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
 
@@ -176,8 +177,18 @@ def guess():
     model = load_model()
     # generate the commands from the model, and execute if auto_execute is True
     with console.status(f"[cyan]Guessing..."):
-        prompt_txt = prompt.gen_suggestions()
-        command = model.guess_command(prompt_txt)
+        history = ""
+        prompt_txt = prompt.gen_suggestions(ref_num=10)
+        for i in get_command_history()['shell_command_history']:
+            if i['command'] == "t guess" or i['command'] == "termax guess":
+                continue
+
+            history += f"""
+            Command: {i['command']}
+            Date: {i['time']}\n
+            """
+
+        command = model.guess_command(history, prompt_txt)
 
     if config_dict['general']['show_command'] == "True":
         console.log(f"Generated command: {command}")

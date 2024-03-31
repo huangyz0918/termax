@@ -33,13 +33,17 @@ class QianFanModel(Model):
         self.version = version
         self.generation_config = generation_config
 
-    def guess_command(self, prompt):
+    def guess_command(self, history, prompt):
         """
         Guess the command based on the prompt.
+        Args:
+            history (str): The history.
+            prompt (str): The prompt.
         """
         message = self.client.do(
             model=self.version,
-            messages=[{"role": "user", "content": prompt}],
+            messages=[{"role": "user", "content": history}],
+            system=prompt,
             temperature=self.generation_config['temperature'],
             top_p=self.generation_config['top_p'],
             max_output_tokens=self.generation_config['max_output_tokens']

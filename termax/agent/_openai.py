@@ -30,10 +30,11 @@ class OpenAIModel(Model):
         self.temperature = temperature
         self.client = self.OpenAI(api_key=api_key)
 
-    def guess_command(self, prompt):
+    def guess_command(self, history, prompt):
         """
         Guess the command based on the prompt.
         Args:
+            history (str): The history.
             prompt (str): The prompt.
         """
         completion = self.client.chat.completions.create(
@@ -45,7 +46,7 @@ class OpenAIModel(Model):
                 },
                 {
                     "role": "user",
-                    "content": "",
+                    "content": history,
                 }
             ],
             temperature=self.temperature
