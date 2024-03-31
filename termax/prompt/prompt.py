@@ -65,7 +65,7 @@ class Prompt:
             
             {history_string}
             
-            [INFORMATION] The current time: {datetime.now().isoformat()}\n 
+            [INFORMATION] The current time: {datetime.now().isoformat()}\n
             
             Here are some rules you need to follow:\n
                         
@@ -98,7 +98,7 @@ class Prompt:
 
             {history_string}
 
-            [INFORMATION] The current time: {datetime.now().isoformat()}\n 
+            [INFORMATION] The current time: {datetime.now().isoformat()}\n
 
             Here are some rules you need to follow:\n
 
