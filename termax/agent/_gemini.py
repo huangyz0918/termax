@@ -39,6 +39,15 @@ class GeminiModel(Model):
             candidate_count=generation_config['candidate_count'],
             max_output_tokens=generation_config['max_output_tokens'])
 
+    def guess_command(self, prompt):
+        """
+        Guess the command based on the prompt.
+        """
+        model = self.genai.GenerativeModel(self.version)
+        chat = model.start_chat(history=[])
+        response = chat.send_message(prompt, generation_config=self.generation_config).text
+        return extract_shell_commands(response)
+
     def to_command(self, prompt, text):
         """
         Generate a command based on the prompt and text.

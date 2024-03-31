@@ -34,6 +34,22 @@ class QianWenModel(Model):
         self.dashscope.api_key = api_key
         self.generation_config = generation_config
 
+    def guess_command(self, prompt):
+        """
+        Guess the command based on the prompt.
+        """
+        message = self.dashscope.Generation.call(
+            model=self.version,
+            messages=[{'role': 'user', 'content': prompt}],
+            max_tokens=self.generation_config['max_tokens'],
+            temperature=self.generation_config['temperature'],
+            top_k=self.generation_config['top_k'],
+            top_p=self.generation_config['top_p'],
+            stop=self.generation_config['stop'],
+        )
+        response = message['output'].text
+        return extract_shell_commands(response)
+
     def to_command(self, prompt, text):
         """
         Generate a command based on the prompt and text.

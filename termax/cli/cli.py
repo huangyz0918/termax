@@ -10,6 +10,8 @@ from termax.utils import Config, CONFIG_PATH, qa_general, qa_platform, qa_confir
 from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
 
 memory = Memory()
+# avoid the tokenizers parallelism issue
+os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
 
 class DefaultCommandGroup(click.Group):
@@ -71,40 +73,13 @@ def build_config(general: bool = False):
         configuration.write_general(general_config)
 
 
-@click.group(cls=DefaultCommandGroup)
-@click.version_option(version=termax.__version__)
-def cli():
+def load_model():
     """
-    Termax: A CLI tool to generate and execute commands from natural language.
+    load_model: load the model based on the configuration.
     """
-    pass
-
-
-@cli.command(default_command=True)
-@click.argument('text', nargs=-1)
-def generate(text):
-    """
-    This function will call and generate the commands from LLM
-    """
-    console = Console()
-    text = " ".join(text)
     configuration = Config()
-
-    # avoid the tokenizers parallelism issue
-    os.environ['TOKENIZERS_PARALLELISM'] = 'false'
-
-    # check the configuration available or not
-    if not os.path.exists(CONFIG_PATH):
-        click.echo("Config file not found. Running config setup...")
-        build_config()
-
-    prompt = Prompt(memory)
     config_dict = configuration.read()
     platform = config_dict['general']['platform']
-    if not configuration.config.has_section(platform):
-        click.echo(f"Platform {platform} section not found. Running config setup...")
-        build_config()
-        config_dict = configuration.read()
 
     if platform == CONFIG_SEC_OPENAI:
         model = OpenAIModel(
@@ -169,6 +144,81 @@ def generate(text):
         )
     else:
         raise ValueError(f"Platform {platform} not supported.")
+
+    return model
+
+
+@click.group(cls=DefaultCommandGroup)
+@click.version_option(version=termax.__version__)
+def cli():
+    """
+    Termax: A CLI tool to generate and execute commands from natural language.
+    """
+    pass
+
+
+@cli.command()
+def guess():
+    """
+    Guess the next command based on the information provided.
+    """
+    console = Console()
+    prompt = Prompt(memory)
+    configuration = Config()
+
+    config_dict = configuration.read()
+    platform = config_dict['general']['platform']
+    if not configuration.config.has_section(platform):
+        click.echo(f"Platform {platform} section not found. Running config setup...")
+        build_config()
+        config_dict = configuration.read()
+
+    model = load_model()
+    # generate the commands from the model, and execute if auto_execute is True
+    with console.status(f"[cyan]Guessing..."):
+        prompt_txt = prompt.gen_suggestions()
+        command = model.guess_command(prompt_txt)
+
+    if config_dict['general']['show_command'] == "True":
+        console.log(f"Generated command: {command}")
+
+    if config_dict['general']['auto_execute'] == "True":
+        subprocess.run(command, shell=True, text=True)
+    else:
+        choice = qa_confirm()
+        if choice == 0:
+            subprocess.run(command, shell=True, text=True)
+        elif choice == 2:
+            with console.status(f"[cyan]Generating..."):
+                description = model.to_description(prompt.explain_commands(), command)
+            console.log(f"{description}")
+
+
+@cli.command(default_command=True)
+@click.argument('text', nargs=-1)
+def generate(text):
+    """
+    This function will call and generate the commands from LLM
+    """
+    console = Console()
+    text = " ".join(text)
+    configuration = Config()
+
+    # check the configuration available or not
+    if not os.path.exists(CONFIG_PATH):
+        click.echo("Config file not found. Running config setup...")
+        build_config()
+
+    prompt = Prompt(memory)
+    config_dict = configuration.read()
+    platform = config_dict['general']['platform']
+    if not configuration.config.has_section(platform):
+        click.echo(f"Platform {platform} section not found. Running config setup...")
+        build_config()
+        config_dict = configuration.read()
+
+    # load the LLM model
+    model = load_model()
 
     # generate the commands from the model, and execute if auto_execute is True
     with console.status(f"[cyan]Generating..."):

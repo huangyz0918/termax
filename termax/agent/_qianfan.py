@@ -33,6 +33,20 @@ class QianFanModel(Model):
         self.version = version
         self.generation_config = generation_config
 
+    def guess_command(self, prompt):
+        """
+        Guess the command based on the prompt.
+        """
+        message = self.client.do(
+            model=self.version,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.generation_config['temperature'],
+            top_p=self.generation_config['top_p'],
+            max_output_tokens=self.generation_config['max_output_tokens']
+        )
+        response = message['body']['result']
+        return extract_shell_commands(response)
+
     def to_command(self, prompt, text):
         """
         Generate a command based on the prompt and request.

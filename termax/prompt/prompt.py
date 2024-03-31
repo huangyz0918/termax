@@ -2,6 +2,8 @@ from .memory import Memory
 from termax.utils.metadata import *
 from termax.utils import CONFIG_SEC_OPENAI
 
+from datetime import datetime
+
 
 class Prompt:
     def __init__(self, memory):
@@ -20,6 +22,92 @@ class Prompt:
             self.memory = Memory()
         else:
             self.memory = memory
+
+    def gen_suggestions(self, model: str = CONFIG_SEC_OPENAI):
+        """
+        [Prompt] Generate the suggestions based on the environment and the history.
+        Args:
+            model: the model to use, default is OpenAI.
+        """
+
+        history = get_command_history(5)['shell_command_history']
+        history_string = ""
+        for i in history:
+            if i['command'] == "t guess" or i['command'] == "termax guess":
+                continue
+
+            history_string += f"""
+            Command: {i['command']}
+            Date: {i['time']}\n
+            """
+
+        files = get_file_metadata()
+        if model == CONFIG_SEC_OPENAI:
+            return f"""
+            You are an shell expert, you need to guess the next command based on the information provided.\n
+            
+            [INFORMATION] The user's current system information:\n
+            
+            1. OS: {self.system_metadata['platform']}
+            2. OS Version: {self.system_metadata['platform_version']}
+            3. Architecture: {self.system_metadata['architecture']}
+            
+            [INFORMATION] The user's current PATH information:\n
+            
+            1. User: {self.path_metadata['user']}
+            2. Current PATH: {self.path_metadata['current_directory']}
+            3. Files under the current directory: {files['files']}
+            4. Directories under the current directory: {files['directory']}
+            5. Invisible files under the current directory: {files['invisible_files']}
+            6. Invisible directories under the current directory: {files['invisible_directory']}
+            
+            [INFORMATION] The user's command history:\n
+            
+            {history_string}
+            
+            [INFORMATION] The current time: {datetime.now().isoformat()}\n 
+            
+            Here are some rules you need to follow:\n
+                        
+            1. Please provide only shell commands for os without any description.
+            2. Ensure the output is a valid shell command.
+            
+            Commands: ${{command}}
+            
+            """
+        else:
+            return f"""
+            You are an shell expert, you need to guess the next command based on the information provided.\n
+
+            [INFORMATION] The user's current system information:\n
+
+            1. OS: {self.system_metadata['platform']}
+            2. OS Version: {self.system_metadata['platform_version']}
+            3. Architecture: {self.system_metadata['architecture']}
+
+            [INFORMATION] The user's current PATH information:\n
+
+            1. User: {self.path_metadata['user']}
+            2. Current PATH: {self.path_metadata['current_directory']}
+            3. Files under the current directory: {files['files']}
+            4. Directories under the current directory: {files['directory']}
+            5. Invisible files under the current directory: {files['invisible_files']}
+            6. Invisible directories under the current directory: {files['invisible_directory']}
+
+            [INFORMATION] The user's command history:\n
+
+            {history_string}
+
+            [INFORMATION] The current time: {datetime.now().isoformat()}\n 
+
+            Here are some rules you need to follow:\n
+
+            1. Please provide only shell commands for os without any description.
+            2. Ensure the output is a valid shell command.
+
+            Commands: ${{command}}
+
+            """
 
     def explain_commands(self, model: str = CONFIG_SEC_OPENAI):
         """

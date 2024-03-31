@@ -88,6 +88,17 @@ class Memory:
         """
         return self.client.get_or_create_collection(collection).query(query_texts=query_texts, n_results=n_results)
 
+    def peek(self, collection: str = DB_COMMAND_HISTORY, n_results: int = 20):
+        """
+        peek: peek the memery.
+        Args:
+            collection: the name of the collection to peek, default is the command history.
+            n_results: the number of results to return.
+
+        Returns: the top k results.
+        """
+        return self.client.get_or_create_collection(collection).peek(limit=n_results)
+
     def get(self, record_id: str = None, collection: str = DB_COMMAND_HISTORY):
         """
         get: get the record by the id.

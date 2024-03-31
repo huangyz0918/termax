@@ -31,6 +31,23 @@ class ClaudeModel(Model):
         self.client = self.anthropic.Anthropic(api_key=api_key)
         self.generation_config = generation_config
 
+    def guess_command(self, prompt):
+        """
+        Guess the command based on the prompt.
+        """
+        message = self.client.messages.create(
+            model=self.version,
+            system=prompt,
+            max_tokens=self.generation_config['max_tokens'],
+            temperature=self.generation_config['temperature'],
+            top_k=self.generation_config['top_k'],
+            top_p=self.generation_config['top_p'],
+            stop_sequences=self.generation_config['stop_sequences'],
+            messages=[{"role": "user", "content": ""}]
+        )
+        response = message.content[0].text
+        return extract_shell_commands(response)
+
     def to_command(self, prompt, text):
         """
         Generate a command based on the prompt and text.

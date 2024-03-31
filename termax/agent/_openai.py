@@ -30,6 +30,29 @@ class OpenAIModel(Model):
         self.temperature = temperature
         self.client = self.OpenAI(api_key=api_key)
 
+    def guess_command(self, prompt):
+        """
+        Guess the command based on the prompt.
+        Args:
+            prompt (str): The prompt.
+        """
+        completion = self.client.chat.completions.create(
+            model=self.version,
+            messages=[
+                {
+                    "role": "system",
+                    "content": prompt
+                },
+                {
+                    "role": "user",
+                    "content": "",
+                }
+            ],
+            temperature=self.temperature
+        )
+        response = completion.choices[0].message.content
+        return extract_shell_commands(response)
+
     def to_command(self, prompt, text):
         """
         Generate a command based on the prompt and text.

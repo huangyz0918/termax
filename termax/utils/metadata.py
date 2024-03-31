@@ -131,9 +131,41 @@ def get_path_metadata():
         "user": os.getlogin(),
         "current_directory": os.getcwd(),
         "home_directory": os.path.expanduser("~"),
-        "user_directory": os.path.expanduser("~"),
         "executable_commands": sorted(list(commands))
     }
+
+
+def get_file_metadata():
+    """
+    get_file_metadata: Records the file information in the current directory.
+    """
+    result = {
+        "directory": [],
+        "files": [],
+        "invisible_files": [],
+        "invisible_directory": []
+    }
+
+    # Get the current directory
+    current_directory = os.getcwd()
+
+    # List all files and directories in the current directory
+    for item in os.listdir(current_directory):
+        # Build the full path of the item
+        item_path = os.path.join(current_directory, item)
+        # Check if the item is invisible (hidden)
+        if item.startswith('.'):
+            if os.path.isdir(item_path):
+                result["invisible_directory"].append(item)
+            else:
+                result["invisible_files"].append(item)
+        else:
+            if os.path.isdir(item_path):
+                result["directory"].append(item)
+            else:
+                result["files"].append(item)
+
+    return result
 
 
 def get_python_metadata():
@@ -202,12 +234,11 @@ def get_gpu_metadata():
 
 def get_command_history(limit=15):
     """
-    get_command_history: Get the command history of the current user.
+    get_command_history: Get the command history of the current user including command times for zsh.
 
     :param limit: the number of commands to return.
-    :return:
+    :return: A list of dictionaries with 'command' and optionally 'time' keys, where 'time' is in datetime format.
     """
-    shell_type = ''
     if sys.platform.startswith('linux') or sys.platform == 'darwin':
         # Attempt to detect the default shell from the $SHELL environment variable or /etc/passwd
         shell = os.environ.get('SHELL', pwd.getpwnam(getpass.getuser()).pw_shell)
@@ -215,32 +246,44 @@ def get_command_history(limit=15):
         if 'bash' in shell:
             shell_type = 'bash'
             history_file = os.path.join(os.environ['HOME'], '.bash_history')
+            history_format = 'plain'
         elif 'zsh' in shell:
             shell_type = 'zsh'
             history_file = os.path.join(os.environ['HOME'], '.zsh_history')
+            history_format = 'with_time'
         # Add additional elif blocks for other shells like fish, tcsh, etc.
         else:
             raise ValueError(f"Shell not supported or history file unknown for shell: {shell}")
 
     elif sys.platform == 'win32':
-        # For PowerShell
         shell_type = 'powershell'
         history_file = os.path.join(os.environ['APPDATA'], 'Microsoft', 'Windows', 'PowerShell', 'PSReadLine',
                                     'ConsoleHost_history.txt')
+        history_format = 'plain'
     else:
         raise ValueError(f"Platform not supported: {sys.platform}")
 
     try:
         history_lines = []
-        with open(history_file, 'rb') as file:  # Open as binary
+        with open(history_file, 'rb') as file:  # Open as binary to handle potential non-UTF characters
             for line in file:
                 try:
                     # Decode each line individually, replace errors
                     decoded_line = line.decode('utf-8', 'replace').strip()
-                    if shell_type == 'zsh':
-                        # Remove the timestamp prefix from zsh history
-                        decoded_line = re.sub(r'^:\s[0-9]+:[0-9];', '', decoded_line)
-                    history_lines.append(decoded_line)
+                    if history_format == 'with_time' and shell_type == 'zsh':
+                        # Regex to parse zsh history with timestamps
+                        match = re.match(r'^: (\d+):\d+;(.*)', decoded_line)
+                        if match:
+                            # Convert epoch time to datetime object and format it
+                            epoch_time = int(match.group(1))
+                            datetime_obj = datetime.fromtimestamp(epoch_time)
+                            formatted_time = datetime_obj.strftime('%Y-%m-%d %H:%M:%S')
+                            history_lines.append({
+                                'command': match.group(2).strip(),
+                                'time': formatted_time
+                            })
+                    else:
+                        history_lines.append({'command': decoded_line, 'time': None})
                 except UnicodeDecodeError:
                     # In case decoding fails, skip the line or handle appropriately
                     continue
