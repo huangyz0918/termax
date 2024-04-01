@@ -232,7 +232,7 @@ def get_gpu_metadata():
     }
 
 
-def get_command_history(limit=15):
+def get_command_history():
     """
     get_command_history: Get the command history of the current user including command times for zsh.
 
@@ -287,8 +287,8 @@ def get_command_history(limit=15):
                 except UnicodeDecodeError:
                     # In case decoding fails, skip the line or handle appropriately
                     continue
-            # Return the most recent `limit` commands
-            return {"shell_command_history": history_lines[-limit:]}
+            # Return all commands
+            return {"shell_command_history": history_lines[::-1]}
     except Exception as e:
         return f"Failed to read history file: {e}"
 
