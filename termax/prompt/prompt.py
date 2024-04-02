@@ -23,24 +23,12 @@ class Prompt:
         else:
             self.memory = memory
 
-    def gen_suggestions(self, ref_num: int = 1, model: str = CONFIG_SEC_OPENAI):
+    def gen_suggestions(self, model: str = CONFIG_SEC_OPENAI):
         """
         [Prompt] Generate the suggestions based on the environment and the history.
         Args:
-            ref_num: the number of the references to use.
             model: the model to use, default is OpenAI.
         """
-
-        # history = get_command_history(ref_num)['shell_command_history']
-        # history_string = ""
-        # for i in history:
-        #     if i['command'] == "t guess" or i['command'] == "termax guess":
-        #         continue
-
-        #     history_string += f"""
-        #     Command: {i['command']}
-        #     Date: {i['time']}\n
-        #     """
 
         files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:
