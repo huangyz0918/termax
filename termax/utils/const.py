@@ -30,3 +30,5 @@ CONFIG_SEC_QIANFAN = 'qianfan'
 
 # Qianwen
 CONFIG_SEC_QIANWEN = 'qianwen'
+
+COMMAND_HISTORY_COUNT = 5

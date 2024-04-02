@@ -177,17 +177,21 @@ def guess():
     model = load_model()
     # generate the commands from the model, and execute if auto_execute is True
     with console.status(f"[cyan]Guessing..."):
-        history = ""
-        prompt_txt = prompt.gen_suggestions(ref_num=10)
+        prompt_txt = prompt.gen_suggestions(ref_num=5)
+
+        history, index = "Command History: \n", 0
         for i in get_command_history()['shell_command_history']:
-            if i['command'] == "t guess" or i['command'] == "termax guess":
+            if i['command'] in ("t guess", "termax guess"):
                 continue
 
             history += f"""
             Command: {i['command']}
             Date: {i['time']}\n
             """
-
+            index += 1
+            if index >= COMMAND_HISTORY_COUNT:
+                break
+        
         command = model.guess_command(history, prompt_txt)
 
     if config_dict['general']['show_command'] == "True":

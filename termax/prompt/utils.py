@@ -15,12 +15,17 @@ def extract_code_from_markdown(markdown_text, separator="\n\n"):
 
 
 def extract_shell_commands(output):
-    command_start = "Commands: "
-    start_index = output.find(command_start)
+    commands_start = "Commands: "
+    commands_index = output.find(commands_start)
+    
+    command_start = "Command: "
+    command_index = output.find(command_start)
 
-    if start_index == -1:
-        commands = extract_code_from_markdown(output)
+    if command_index >= 0:
+        commands = output[command_index + len(command_start):].strip()
+    elif commands_index >= 0:
+        commands = output[commands_index + len(commands_start):].strip()
     else:
-        commands = output[start_index + len(command_start):].strip()
+        commands = extract_code_from_markdown(output)
 
     return commands

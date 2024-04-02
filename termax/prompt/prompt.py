@@ -23,7 +23,7 @@ class Prompt:
         else:
             self.memory = memory
 
-    def gen_suggestions(self, ref_num: int = 10, model: str = CONFIG_SEC_OPENAI):
+    def gen_suggestions(self, ref_num: int = 1, model: str = CONFIG_SEC_OPENAI):
         """
         [Prompt] Generate the suggestions based on the environment and the history.
         Args:
@@ -31,21 +31,21 @@ class Prompt:
             model: the model to use, default is OpenAI.
         """
 
-        history = get_command_history(ref_num)['shell_command_history']
-        history_string = ""
-        for i in history:
-            if i['command'] == "t guess" or i['command'] == "termax guess":
-                continue
+        # history = get_command_history(ref_num)['shell_command_history']
+        # history_string = ""
+        # for i in history:
+        #     if i['command'] == "t guess" or i['command'] == "termax guess":
+        #         continue
 
-            history_string += f"""
-            Command: {i['command']}
-            Date: {i['time']}\n
-            """
+        #     history_string += f"""
+        #     Command: {i['command']}
+        #     Date: {i['time']}\n
+        #     """
 
         files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:
             return f"""
-            You are an shell expert, you need to guess the next command based on the information provided.\n
+            You are an shell expert, you need to guess the next command based on the command history.\n
             
             [INFORMATION] The user's current system information:\n
             
@@ -69,8 +69,9 @@ class Prompt:
             1. Please provide only shell commands for os without any description.
             2. Ensure the output is a valid shell command.
             
-            Commands: ${{commands}}
+            The output shell commands is (please replace the `{{commands}}` with the actual commands):
             
+            Commands: ${{commands}}
             """
         else:
             return f"""
@@ -97,9 +98,10 @@ class Prompt:
 
             1. Please provide only shell commands for os without any description.
             2. Ensure the output is a valid shell command.
-
-           Commands: ${{commands}}
-
+            
+            The output shell commands is (please replace the `{{commands}}` with the actual commands):
+            
+            Commands: ${{commands}}
             """
 
     def explain_commands(self, model: str = CONFIG_SEC_OPENAI):
@@ -141,7 +143,7 @@ class Prompt:
         self.command_history = get_command_history()
         if model == CONFIG_SEC_OPENAI:
             return f"""
-            You are an shell expert, you can convert this text to shell commands.\n
+            You are an shell expert, you can convert natural language text from user to shell commands.\n
             
             1. Please provide only shell commands for os without any description.
             2. Ensure the output is a valid shell command.
