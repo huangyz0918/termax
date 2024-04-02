@@ -51,7 +51,6 @@ class Prompt:
             Command: ${{primary_command}}
             """
         
-    
     def gen_suggestions(self, model: str = CONFIG_SEC_OPENAI):
         """
         [Prompt] Generate the suggestions based on the environment and the history.
