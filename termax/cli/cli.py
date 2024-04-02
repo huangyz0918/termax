@@ -177,7 +177,7 @@ def guess():
     model = load_model()
     # generate the commands from the model, and execute if auto_execute is True
     with console.status(f"[cyan]Guessing..."):
-        prompt_txt = prompt.gen_suggestions(ref_num=5)
+        prompt_txt = prompt.gen_suggestions()
 
         history, index = "Command History: \n", 0
         for i in get_command_history()['shell_command_history']:
@@ -191,7 +191,7 @@ def guess():
             index += 1
             if index >= COMMAND_HISTORY_COUNT:
                 break
-        
+
         command = model.guess_command(history, prompt_txt)
 
     if config_dict['general']['show_command'] == "True":

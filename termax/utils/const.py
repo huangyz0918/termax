@@ -9,6 +9,7 @@ CONFIG_LLM_LIST = {  # with the default model.
     'Qianwen': 'qwen-turbo'
 }
 
+COMMAND_HISTORY_COUNT = 5
 DB_PATH = 'database'
 DB_COMMAND_HISTORY = 'history'
 DB_SYS_METRICS = 'system'
@@ -30,5 +31,3 @@ CONFIG_SEC_QIANFAN = 'qianfan'
 
 # Qianwen
 CONFIG_SEC_QIANWEN = 'qianwen'
-
-COMMAND_HISTORY_COUNT = 5
