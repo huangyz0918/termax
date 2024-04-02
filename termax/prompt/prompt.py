@@ -23,13 +23,40 @@ class Prompt:
         else:
             self.memory = memory
 
+    def intent_detect(self, model: str = CONFIG_SEC_OPENAI):
+        """
+        [Prompt] Detect the intent of code type based on the command history.
+        Args:
+            model: the model to use, default is OpenAI.
+        """
+        if model == CONFIG_SEC_OPENAI:
+            return f"""
+            Analyze the provided list of command history entries and infer the primary command or tool being utilized based on the pattern, context, and sequence of these commands.
+            The term "primary command" refers to the main or leading command in a sequence of operations or instructions.
+            Please don't include Subcommand/Argument in the output.
+            
+            The output shell primary command is (please replace the `{{primary_command}}` with the primary command):
+            
+            Command: ${{primary_command}}
+            """
+        else:
+            # TODO: add more models specific prompt
+            return f"""
+            Analyze the provided list of command history entries and infer the primary command or tool being utilized based on the pattern, context, and sequence of these commands.
+            The term "primary command" refers to the main or leading command in a sequence of operations or instructions.
+            Please don't include Subcommand/Argument in the output.
+            
+            The output shell primary command is (please replace the `{{primary_command}}` with the primary command):
+            
+            Command: ${{primary_command}}
+            """
+        
     def gen_suggestions(self, model: str = CONFIG_SEC_OPENAI):
         """
         [Prompt] Generate the suggestions based on the environment and the history.
         Args:
             model: the model to use, default is OpenAI.
         """
-
         files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:
             return f"""
@@ -62,6 +89,7 @@ class Prompt:
             Commands: ${{commands}}
             """
         else:
+            # TODO: add more models specific prompt
             return f"""
             You are an shell expert, you need to guess the next command based on the information provided.\n
 
@@ -149,7 +177,7 @@ class Prompt:
             
             \nThe user's system PATH information (in dict format): {self.path_metadata} \n
             
-            \nThe user's command history (in dict format): {self.command_history} \n
+            \nThe user's command history: {self.command_history["shell_command_history"][:15]} \n
             
             Here are some similar commands generated before:\n
             
@@ -180,7 +208,7 @@ class Prompt:
 
             \nThe user's system PATH information (in dict format): {self.path_metadata} \n
 
-            \nThe user's command history (in dict format): {self.command_history} \n
+            \nThe user's command history: {self.command_history["shell_command_history"][:15]} \n
 
             Here are some similar commands generated before:\n
 
