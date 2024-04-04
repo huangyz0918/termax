@@ -3,6 +3,7 @@ from termax.utils.metadata import *
 from termax.utils import CONFIG_SEC_OPENAI
 
 from datetime import datetime
+import textwrap
 
 
 class Prompt:
@@ -29,27 +30,66 @@ class Prompt:
         Args:
             model: the model to use, default is OpenAI.
         """
+        files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:
-            return f"""
+            return textwrap.dedent(f"""\
             Analyze the provided list of command history entries and infer the primary command or tool being utilized based on the pattern, context, and sequence of these commands.
             The term "primary command" refers to the main or leading command in a sequence of operations or instructions.
-            Please don't include Subcommand/Argument in the output.
+            
+            [INFORMATION] The user's current system information:
+            
+            1. OS: {self.system_metadata['platform']}
+            2. OS Version: {self.system_metadata['platform_version']}
+            3. Architecture: {self.system_metadata['architecture']}
+            
+            [INFORMATION] The user's current PATH information:
+            
+            1. User: {self.path_metadata['user']}
+            2. Current PATH: {self.path_metadata['current_directory']}
+            3. Files under the current directory: {files['files']}
+            4. Directories under the current directory: {files['directory']}
+            5. Invisible files under the current directory: {files['invisible_files']}
+            6. Invisible directories under the current directory: {files['invisible_directory']}
+            
+            [INFORMATION] The current time: {datetime.now().isoformat()}
+            
+            Here are some rules you need to follow:
+            1. Don't include Subcommand/Argument in the output.
             
             The output shell primary command is (please replace the `{{primary_command}}` with the primary command):
             
             Command: ${{primary_command}}
-            """
+            """)
         else:
             # TODO: add more models specific prompt
-            return f"""
+            return textwrap.dedent(f"""\
             Analyze the provided list of command history entries and infer the primary command or tool being utilized based on the pattern, context, and sequence of these commands.
             The term "primary command" refers to the main or leading command in a sequence of operations or instructions.
-            Please don't include Subcommand/Argument in the output.
+            
+            [INFORMATION] The user's current system information:
+            
+            1. OS: {self.system_metadata['platform']}
+            2. OS Version: {self.system_metadata['platform_version']}
+            3. Architecture: {self.system_metadata['architecture']}
+            
+            [INFORMATION] The user's current PATH information:
+            
+            1. User: {self.path_metadata['user']}
+            2. Current PATH: {self.path_metadata['current_directory']}
+            3. Files under the current directory: {files['files']}
+            4. Directories under the current directory: {files['directory']}
+            5. Invisible files under the current directory: {files['invisible_files']}
+            6. Invisible directories under the current directory: {files['invisible_directory']}
+            
+            [INFORMATION] The current time: {datetime.now().isoformat()}
+            
+            Here are some rules you need to follow:
+            1. Don't include Subcommand/Argument in the output.
             
             The output shell primary command is (please replace the `{{primary_command}}` with the primary command):
             
             Command: ${{primary_command}}
-            """
+            """)
         
     def gen_suggestions(self, model: str = CONFIG_SEC_OPENAI):
         """
@@ -59,16 +99,16 @@ class Prompt:
         """
         files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:
-            return f"""
-            You are an shell expert, you need to guess the next command based on the command history.\n
+            return textwrap.dedent(f"""\
+            You are an shell expert, you need to guess the next command based on the command history.
             
-            [INFORMATION] The user's current system information:\n
+            [INFORMATION] The user's current system information:
             
             1. OS: {self.system_metadata['platform']}
             2. OS Version: {self.system_metadata['platform_version']}
             3. Architecture: {self.system_metadata['architecture']}
             
-            [INFORMATION] The user's current PATH information:\n
+            [INFORMATION] The user's current PATH information:
             
             1. User: {self.path_metadata['user']}
             2. Current PATH: {self.path_metadata['current_directory']}
@@ -77,29 +117,28 @@ class Prompt:
             5. Invisible files under the current directory: {files['invisible_files']}
             6. Invisible directories under the current directory: {files['invisible_directory']}
             
-            [INFORMATION] The current time: {datetime.now().isoformat()}\n
+            [INFORMATION] The current time: {datetime.now().isoformat()}
             
-            Here are some rules you need to follow:\n
-                        
+            Here are some rules you need to follow:       
             1. Please provide only shell commands for os without any description.
             2. Ensure the output is a valid shell command.
             
             The output shell commands is (please replace the `{{commands}}` with the actual commands):
             
             Commands: ${{commands}}
-            """
+            """)
         else:
             # TODO: add more models specific prompt
-            return f"""
-            You are an shell expert, you need to guess the next command based on the information provided.\n
+            return textwrap.dedent(f"""\
+            You are an shell expert, you need to guess the next command based on the information provided.
 
-            [INFORMATION] The user's current system information:\n
+            [INFORMATION] The user's current system information:
 
             1. OS: {self.system_metadata['platform']}
             2. OS Version: {self.system_metadata['platform_version']}
             3. Architecture: {self.system_metadata['architecture']}
 
-            [INFORMATION] The user's current PATH information:\n
+            [INFORMATION] The user's current PATH information:
 
             1. User: {self.path_metadata['user']}
             2. Current PATH: {self.path_metadata['current_directory']}
@@ -108,17 +147,16 @@ class Prompt:
             5. Invisible files under the current directory: {files['invisible_files']}
             6. Invisible directories under the current directory: {files['invisible_directory']}
 
-            [INFORMATION] The current time: {datetime.now().isoformat()}\n
+            [INFORMATION] The current time: {datetime.now().isoformat()}
 
-            Here are some rules you need to follow:\n
-
+            Here are some rules you need to follow:
             1. Please provide only shell commands for os without any description.
             2. Ensure the output is a valid shell command.
             
             The output shell commands is (please replace the `{{commands}}` with the actual commands):
             
             Commands: ${{commands}}
-            """
+            """)
 
     def explain_commands(self, model: str = CONFIG_SEC_OPENAI):
         """
@@ -158,63 +196,63 @@ class Prompt:
         # refresh the metadata
         self.command_history = get_command_history()
         if model == CONFIG_SEC_OPENAI:
-            return f"""
-            You are an shell expert, you can convert natural language text from user to shell commands.\n
+            return textwrap.dedent(f"""\
+            You are an shell expert, you can convert natural language text from user to shell commands.
             
             1. Please provide only shell commands for os without any description.
             2. Ensure the output is a valid shell command.
             3. If multiple steps required try to combine them together.
             
-            Here are some rules you need to follow:\n
+            Here are some rules you need to follow:
             
             1. The commands should be able to run on the current system according to the system information.
             2. The files in the commands (if any) should be available in the path, according to the path information.
             3. The CLI application should be installed in the system (check the path information).
             
-            Here are some information you may need to know:\n
+            Here are some information you may need to know:
             
-            \nCurrent system information (in dict format): {self.system_metadata} \n
+            Current system information (in dict format): {self.system_metadata}
             
-            \nThe user's system PATH information (in dict format): {self.path_metadata} \n
+            The user's system PATH information (in dict format): {self.path_metadata} 
             
-            \nThe user's command history: {self.command_history["shell_command_history"][:15]} \n
+            The user's command history: {self.command_history["shell_command_history"][:15]} 
             
-            Here are some similar commands generated before:\n
+            Here are some similar commands generated before:
             
             {sample_string}
             
             The output shell commands is (please replace the `{{commands}}` with the actual commands):
             
             Commands: ${{commands}}
-            """
+            """)
         else:
             # TODO: add more models specific prompt
-            return f"""
-            You are an shell expert, you can convert this text to shell commands.\n
+            return textwrap.dedent(f"""\
+            You are an shell expert, you can convert this text to shell commands.
 
             1. Please provide only shell commands for os without any description.
             2. Ensure the output is a valid shell command.
             3. If multiple steps required try to combine them together.
 
-            Here are some rules you need to follow:\n
+            Here are some rules you need to follow:
 
             1. The commands should be able to run on the current system according to the system information.
             2. The files in the commands (if any) should be available in the path, according to the path information.
             3. The CLI application should be installed in the system (check the path information).
 
-            Here are some information you may need to know:\n
+            Here are some information you may need to know:
 
-            \nCurrent system information (in dict format): {self.system_metadata} \n
+            Current system information (in dict format): {self.system_metadata}
 
-            \nThe user's system PATH information (in dict format): {self.path_metadata} \n
+            The user's system PATH information (in dict format): {self.path_metadata} 
 
-            \nThe user's command history: {self.command_history["shell_command_history"][:15]} \n
+            The user's command history: {self.command_history["shell_command_history"][:15]} 
 
-            Here are some similar commands generated before:\n
+            Here are some similar commands generated before:
 
             {sample_string}
 
             The output shell commands is (please replace the `{{commands}}` with the actual commands):
 
             Commands: ${{commands}}
-            """
+            """)
