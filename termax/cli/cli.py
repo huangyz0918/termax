@@ -179,9 +179,9 @@ def guess():
     with console.status(f"[cyan]Guessing..."):
         def filter_and_format_history(command_history, filter_condition, max_count):
             """Filter and format command history based on a condition and maximum count."""
-            filtered_history = [f"Command: {entry['command']}\nDate: {entry['time']}\n" for entry in command_history if filter_condition(entry)][:max_count]
+            filtered_history = [f"Command: {entry['command']}\nExecution Date: {entry['time']}\n" for entry in command_history if filter_condition(entry)][:max_count]
 
-            return "[INFORMATION] Command History: \n" + "\n".join(filtered_history)
+            return "Command History: \n" + "\n".join(filtered_history)
         
         command_history = get_command_history()['shell_command_history']
         
@@ -193,7 +193,6 @@ def guess():
         )
         # Guess the intent based on the initial history
         prompt_intent = prompt.intent_detect()
-        print(prompt_intent)
         intent = model.guess_command(initial_history, prompt_intent)
         
         # Filter and format history including commands related to the guessed intent
@@ -204,9 +203,9 @@ def guess():
         )
 
         # Generate suggestions and guess the final command
-        prompt_guess = prompt.gen_suggestions()
+        prompt_guess = prompt.gen_suggestions(intent)
         command = model.guess_command(related_history, prompt_guess)
-        
+
     if config_dict['general']['show_command'] == "True":
         console.log(f"Generated command: {command}")
 
