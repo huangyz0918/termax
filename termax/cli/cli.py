@@ -204,7 +204,7 @@ def guess():
             Date: {i['time']}\n
             """
             index += 1
-            if index >= COMMAND_HISTORY_COUNT:
+            if index >= COMMAND_HISTORY_COUNT / 3:
                     break
 
         prompt_guess = prompt.gen_suggestions()
