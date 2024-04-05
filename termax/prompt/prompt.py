@@ -98,11 +98,11 @@ Command: ${{primary_command}}
             model: the model to use, default is OpenAI.
         """
         if primary == 'git':
-            git_metadata = get_git_metadata()
-            primary_data = "\n".join(f"{index + 1}. {key}: {value}" for index, (key, value) in enumerate(git_metadata.items()))
+            primary_data = "\n".join(f"{index + 1}. {key}: {value}" for index, (key, value) in enumerate(get_git_metadata().items()))
+        if primary == 'docker':
+            primary_data = "\n".join(f"{index + 1}. {key}: {value}" for index, (key, value) in enumerate(get_docker_metadata().items()))
         else:
             primary_data = 'None'
-            
         
         files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:

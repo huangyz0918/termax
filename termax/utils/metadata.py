@@ -85,6 +85,65 @@ def get_git_metadata():
         "git_latest_commit_message": latest_commit_message
     }
 
+def get_docker_metadata():
+    """
+    Records the Docker containers and images information of the current workspace.
+    
+    Returns:
+        A dictionary with Docker containers and images metadata.
+    """
+    def parse_docker_output(output, headers):
+        """
+        Parses the output of a Docker command into a list of dictionaries based on provided headers.
+        
+        Args:
+            output: String output from Docker command.
+            headers: List of headers that correspond to Docker output columns.
+            
+        Returns:
+            List of dictionaries with Docker data.
+        """
+        entries = []
+        for line in output.strip().split('\n')[1:]:
+            parts = re.split(r'\s{2,}', line)
+            entry = {header: parts[i] if i < len(parts) else "" for i, header in enumerate(headers)}
+            entries.append(entry)
+        return entries
+    
+    def run_command(command):
+        """
+        Executes a shell command and returns the output.
+        
+        Args:
+            command: List of command arguments.
+        
+        Returns:
+            A tuple of (success flag, output or error message).
+        """
+        try:
+            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+            return result.stdout
+        except subprocess.CalledProcessError as e:
+            raise Exception("Docker command failed: " + e.stderr)
+        
+    containers_info = run_command(["docker", "ps", "-a", "--format", "table {{.ID}}\t{{.Image}}\t{{.Command}}\t{{.CreatedAt}}\t{{.Status}}\t{{.Names}}\t{{.Ports}}"])
+    containers_headers = ['CONTAINER ID', 'IMAGE', 'COMMAND', 'CREATED', 'STATUS', 'NAMES', 'PORTS']
+    containers = parse_docker_output(containers_info, containers_headers)
+    
+    images_info = run_command(["docker", "images"])
+    images_headers = ['REPOSITORY', 'TAG', 'IMAGE ID', 'CREATED', 'SIZE']
+    images = parse_docker_output(images_info, images_headers)
+    
+    # docker_info = run_command(["docker", "info"])
+    # docker_headers = []
+    # docker = parse_docker_output(docker_info, docker_headers)
+    
+    return {
+        # "docker_info": docker_info,
+        "docker_containers": containers,
+        "docker_images": images,
+    }
+
 
 def get_system_metadata():
     """
