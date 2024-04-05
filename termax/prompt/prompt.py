@@ -208,7 +208,7 @@ class Prompt:
             model: the model to use, default is OpenAI.
         """
         # query the history database to get similar samples
-        samples = self.memory.query([text], n_results=5)
+        samples = self.memory.query([text])
         metadatas = samples['metadatas'][0]
         documents = samples['documents'][0]
         distances = samples['distances'][0]

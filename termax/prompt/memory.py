@@ -76,7 +76,7 @@ class Memory:
 
         return ids
 
-    def query(self, query_texts: List[str], collection: str = DB_COMMAND_HISTORY, n_results: int = 1):
+    def query(self, query_texts: List[str], collection: str = DB_COMMAND_HISTORY, n_results: int = 5):
         """
         query: query the memery.
         Args:
