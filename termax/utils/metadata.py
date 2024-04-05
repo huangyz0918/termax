@@ -85,6 +85,7 @@ def get_git_metadata():
         "git_latest_commit_message": latest_commit_message
     }
 
+
 def get_docker_metadata():
     """
     Records the Docker containers and images information of the current workspace.
@@ -92,6 +93,7 @@ def get_docker_metadata():
     Returns:
         A dictionary with Docker containers and images metadata.
     """
+
     def parse_docker_output(output, headers):
         """
         Parses the output of a Docker command into a list of dictionaries based on provided headers.
@@ -109,7 +111,7 @@ def get_docker_metadata():
             entry = {header: parts[i] if i < len(parts) else "" for i, header in enumerate(headers)}
             entries.append(entry)
         return entries
-    
+
     def run_command(command):
         """
         Executes a shell command and returns the output.
@@ -125,19 +127,24 @@ def get_docker_metadata():
             return result.stdout
         except subprocess.CalledProcessError as e:
             raise Exception("Docker command failed: " + e.stderr)
-        
-    containers_info = run_command(["docker", "ps", "-a", "--format", "table {{.ID}}\t{{.Image}}\t{{.Command}}\t{{.CreatedAt}}\t{{.Status}}\t{{.Names}}\t{{.Ports}}"])
+
+    containers_info = run_command(
+        [
+            "docker", "ps", "-a", "--format",
+            "table {{.ID}}\t{{.Image}}\t{{.Command}}\t{{.CreatedAt}}\t{{.Status}}\t{{.Names}}\t{{.Ports}}"
+        ]
+    )
     containers_headers = ['CONTAINER ID', 'IMAGE', 'COMMAND', 'CREATED', 'STATUS', 'NAMES', 'PORTS']
     containers = parse_docker_output(containers_info, containers_headers)
-    
+
     images_info = run_command(["docker", "images"])
     images_headers = ['REPOSITORY', 'TAG', 'IMAGE ID', 'CREATED', 'SIZE']
     images = parse_docker_output(images_info, images_headers)
-    
+
     # docker_info = run_command(["docker", "info"])
     # docker_headers = []
     # docker = parse_docker_output(docker_info, docker_headers)
-    
+
     return {
         # "docker_info": docker_info,
         "docker_containers": containers,
@@ -295,7 +302,6 @@ def get_command_history():
     """
     get_command_history: Get the command history of the current user including command times for zsh.
 
-    :param limit: the number of commands to return.
     :return: A list of dictionaries with 'command' and optionally 'time' keys, where 'time' is in datetime format.
     """
     if sys.platform.startswith('linux') or sys.platform == 'darwin':
