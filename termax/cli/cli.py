@@ -317,3 +317,27 @@ def config(general):
     Set up the global configuration for Termax.
     """
     build_config(general)
+
+
+# a command to show all the commands in the memory
+@cli.command()
+def rag():
+    """
+    Show all the commands in the RAG.
+    """
+    console = Console()
+    commands = memory.get()
+
+    if commands:
+        metadatas = commands['metadatas']
+        documents = commands['documents']
+        idx = commands['ids']
+
+        for i in range(len(idx)):
+            console.log(f"""
+                User Input: {documents[i]}
+                Generated Commands: {metadatas[i]['response']}
+                Date: {metadatas[i]['created_at']}\n
+                """)
+    else:
+        console.log("No commands found in the memory.")
