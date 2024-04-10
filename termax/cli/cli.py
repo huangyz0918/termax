@@ -256,7 +256,7 @@ def generate(text):
         while True:
             command = model.to_command(prompt.gen_commands(text), text)
             if command != '':
-                if not command.startswith('t') and not command.startswith('termax'):
+                if not command.startswith('t ') and not command.startswith('termax '):
                     break
                 else:
                     text = text + ", do not use command t or termax."
