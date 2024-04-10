@@ -1,6 +1,8 @@
 import os
 import click
+import shlex
 import subprocess
+import platform as plat
 from rich.console import Console
 
 import termax
@@ -250,7 +252,11 @@ def generate(text):
 
     # generate the commands from the model, and execute if auto_execute is True
     with console.status(f"[cyan]Generating..."):
-        command = model.to_command(prompt.gen_commands(text), text)
+        # loop until the generated command is not ''.
+        while True:
+            command = model.to_command(prompt.gen_commands(text), text)
+            if command != '':
+                break
 
     if config_dict['general']['show_command'] == "True":
         console.log(f"Generated command: {command}")
@@ -262,7 +268,18 @@ def generate(text):
             cmd: the command to execute.
         """
         try:
-            subprocess.run(cmd, shell=True, text=True)
+            if plat.system() == "Windows":
+                is_powershell = len(os.getenv("PSModulePath", "").split(os.pathsep)) >= 3
+                full_command = (
+                    f'powershell.exe -Command "{cmd}"'
+                    if is_powershell
+                    else f'cmd.exe /c "{cmd}"'
+                )
+            else:
+                shell = os.environ.get("SHELL", "/bin/sh")
+                full_command = f"{shell} -c {shlex.quote(cmd)}"
+
+            os.system(full_command)
         except KeyboardInterrupt:
             pass
         finally:
