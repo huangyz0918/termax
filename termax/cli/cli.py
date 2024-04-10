@@ -69,6 +69,11 @@ def guess():
     configuration = Config()
 
     config_dict = configuration.read()
+    if not configuration.config.has_section(CONFIG_SEC_GENERAL):
+        click.echo(f"General section not found. Running config setup...")
+        build_config(general=True)
+        config_dict = configuration.read()
+    
     platform = config_dict['general']['platform']
     if not configuration.config.has_section(platform):
         click.echo(f"Platform {platform} section not found. Running config setup...")
@@ -143,6 +148,11 @@ def generate(text):
 
     prompt = Prompt(memory)
     config_dict = configuration.read()
+    if not configuration.config.has_section(CONFIG_SEC_GENERAL):
+        click.echo(f"General section not found. Running config setup...")
+        build_config(general=True)
+        config_dict = configuration.read()
+    
     platform = config_dict['general']['platform']
     if not configuration.config.has_section(platform):
         click.echo(f"Platform {platform} section not found. Running config setup...")
