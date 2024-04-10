@@ -1,16 +1,13 @@
 import os
 import click
-import shlex
-import subprocess
-import platform as plat
 from rich.console import Console
 
 import termax
+from .utils import *
 from termax.utils.const import *
 from termax.prompt import Prompt, Memory
 from termax.utils.metadata import get_command_history
-from termax.utils import Config, CONFIG_PATH, qa_general, qa_platform, qa_confirm
-from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
+from termax.utils import Config, CONFIG_PATH, qa_confirm
 
 memory = Memory()
 # avoid the tokenizers parallelism issue
@@ -51,104 +48,6 @@ class DefaultCommandGroup(click.Group):
             # command did not parse, assume it is the default command
             args.insert(0, self.default_command)
             return super(DefaultCommandGroup, self).resolve_command(ctx, args)
-
-
-def build_config(general: bool = False):
-    """
-    build_config: build the configuration for Termax.
-    Args:
-        general: a boolean indicating whether to build the general configuration only.
-    :return:
-    """
-    configuration = Config()
-    if general:  # configure the general configurations
-        general_config = qa_general()
-        if general_config:
-            configuration.write_general(general_config)
-    else:  # configure the platform configurations
-        platform_config = qa_platform()
-        if platform_config:
-            configuration.write_platform(platform_config, platform=platform_config['platform'])
-
-    if not configuration.config.has_section(CONFIG_SEC_GENERAL):
-        click.echo("\nGeneral section not found. Running config setup...")
-        general_config = qa_general()
-        configuration.write_general(general_config)
-
-
-def load_model():
-    """
-    load_model: load the model based on the configuration.
-    """
-    configuration = Config()
-    config_dict = configuration.read()
-    platform = config_dict['general']['platform']
-
-    if platform == CONFIG_SEC_OPENAI:
-        model = OpenAIModel(
-            api_key=config_dict['openai'][CONFIG_SEC_API_KEY], version=config_dict['openai']['model'],
-            temperature=float(config_dict['openai']['temperature'])
-        )
-    elif platform == CONFIG_SEC_GEMINI:
-        model = GeminiModel(
-            api_key=config_dict['gemini'][CONFIG_SEC_API_KEY], version=config_dict['gemini']['model'],
-            generation_config={
-                'stop_sequences': config_dict['gemini']['stop_sequences']
-                if config_dict['gemini']['stop_sequences'] != 'None' else None,
-                'temperature': config_dict['gemini']['temperature'],
-                'top_p': config_dict['gemini']['top_p'],
-                'top_k': config_dict['gemini']['top_k'],
-                'candidate_count': config_dict['gemini']['candidate_count'],
-                'max_output_tokens': config_dict['gemini']['max_tokens']
-            }
-        )
-    elif platform == CONFIG_SEC_CLAUDE:
-        model = ClaudeModel(
-            api_key=config_dict['claude'][CONFIG_SEC_API_KEY], version=config_dict['claude']['model'],
-            generation_config={
-                'stop_sequences': config_dict['claude']['stop_sequences']
-                if config_dict['claude']['stop_sequences'] != 'None' else None,
-                'temperature': config_dict['claude']['temperature'],
-                'top_p': config_dict['claude']['top_p'],
-                'top_k': config_dict['claude']['top_k'],
-                'max_tokens': config_dict['claude']['max_tokens']
-            }
-        )
-    elif platform == CONFIG_SEC_QIANFAN:
-        model = QianFanModel(
-            api_key=config_dict['qianfan'][CONFIG_SEC_API_KEY], secret_key=config_dict['qianfan']['secret_key'],
-            version=config_dict['qianfan']['model'],
-            generation_config={
-                'temperature': config_dict['qianfan']['temperature'],
-                'top_p': config_dict['qianfan']['top_p'],
-                'max_output_tokens': config_dict['qianfan']['max_tokens']
-            }
-        )
-    elif platform == CONFIG_SEC_MISTRAL:
-        model = MistralModel(
-            api_key=config_dict['mistral'][CONFIG_SEC_API_KEY], version=config_dict['mistral']['model'],
-            generation_config={
-                'temperature': config_dict['mistral']['temperature'],
-                'top_p': config_dict['mistral']['top_p'],
-                'max_tokens': config_dict['mistral']['max_tokens']
-            }
-        )
-    elif platform == CONFIG_SEC_QIANWEN:
-        model = QianWenModel(
-            api_key=config_dict['qianwen'][CONFIG_SEC_API_KEY], version=config_dict['qianwen']['model'],
-            generation_config={
-                'temperature': config_dict['qianwen']['temperature'],
-                'top_p': config_dict['qianwen']['top_p'],
-                'top_k': config_dict['qianwen']['top_k'],
-                'stop': config_dict['qianwen']['stop_sequences']
-                if config_dict['qianwen']['stop_sequences'] != 'None' else None,
-                'max_tokens': config_dict['qianwen']['max_tokens']
-            }
-        )
-    else:
-        raise ValueError(f"Platform {platform} not supported.")
-
-    return model
 
 
 @click.group(cls=DefaultCommandGroup)
@@ -212,16 +111,19 @@ def guess():
     if config_dict['general']['show_command'] == "True":
         console.log(command, style="purple")
 
-    if config_dict['general']['auto_execute'] == "True":
-        subprocess.run(command, shell=True, text=True)
-    else:
-        choice = qa_confirm()
-        if choice == 0:
-            subprocess.run(command, shell=True, text=True)
-        elif choice == 2:
-            with console.status(f"[cyan]Generating..."):
-                description = model.to_description(prompt.explain_commands(), command)
-            console.log(f"{description}")
+    try: 
+        if config_dict['general']['auto_execute'] == "True":
+            execute_command(command)
+        else:
+            choice = qa_confirm()
+            if choice == 0:
+                execute_command(command)
+            elif choice == 2:
+                with console.status(f"[cyan]Generating..."):
+                    description = model.to_description(prompt.explain_commands(), command)
+                console.log(f"{description}")
+    except KeyboardInterrupt:
+        pass    
 
 
 @cli.command(default_command=True)
@@ -264,50 +166,22 @@ def generate(text):
     if config_dict['general']['show_command'] == "True":
         console.log(command, style="purple")
 
-    def execute_command(cmd: str):
-        """
-        execute_command: execute the command.
-        Args:
-            cmd: the command to execute.
-        """
-        try:
-            if plat.system() == "Windows":
-                is_powershell = len(os.getenv("PSModulePath", "").split(os.pathsep)) >= 3
-                full_command = (
-                    f'powershell.exe -Command "{cmd}"'
-                    if is_powershell
-                    else f'cmd.exe /c "{cmd}"'
-                )
-            else:
-                shell = os.environ.get("SHELL", "/bin/sh")
-                full_command = f"{shell} -c {shlex.quote(cmd)}"
-
-            os.system(full_command)
-        except KeyboardInterrupt:
-            pass
-        finally:
-            # add the query to the memory, eviction with the default max size of 2000.
-            if config_dict.get(CONFIG_SEC_GENERAL).get('storage_size') is None:
-                storage_size = 2000
-            else:
-                storage_size = int(config_dict[CONFIG_SEC_GENERAL]['storage_size'])
-
-            if memory.count() > storage_size:
-                memory.delete()
-
-            if cmd != '':
-                memory.add_query(queries=[{"query": text, "response": cmd}])
-
-    if config_dict['general']['auto_execute'] == "True":
-        execute_command(command)
-    else:
-        choice = qa_confirm()
-        if choice == 0:
+    try:
+        if config_dict['general']['auto_execute'] == "True":
             execute_command(command)
-        elif choice == 2:
-            with console.status(f"[cyan]Generating..."):
-                description = model.to_description(prompt.explain_commands(), command)
-            console.log(f"{description}")
+        else:
+            choice = qa_confirm()
+            if choice == 0:
+                execute_command(command)
+            elif choice == 2:
+                with console.status(f"[cyan]Generating..."):
+                    description = model.to_description(prompt.explain_commands(), command)
+                console.log(f"{description}")
+    except KeyboardInterrupt:
+        pass
+    finally:
+        if config_dict['general']['auto_execute'] == "True" or choice == 0:
+            save_command(command, text, config_dict, memory)
 
 
 @cli.command()
