@@ -210,7 +210,7 @@ def guess():
         command = model.guess_command(related_history, prompt_guess)
 
     if config_dict['general']['show_command'] == "True":
-        console.log(f"Generated command: {command}")
+        console.log(command, style="purple")
 
     if config_dict['general']['auto_execute'] == "True":
         subprocess.run(command, shell=True, text=True)
@@ -262,7 +262,7 @@ def generate(text):
                     text = text + ", do not use command t or termax."
 
     if config_dict['general']['show_command'] == "True":
-        console.log(f"Generated command: {command}")
+        console.log(command, style="purple")
 
     def execute_command(cmd: str):
         """
