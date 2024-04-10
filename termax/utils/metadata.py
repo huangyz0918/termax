@@ -356,12 +356,3 @@ def get_command_history():
             return {"shell_command_history": history_lines[::-1]}
     except Exception as e:
         return f"Failed to read history file: {e}"
-
-
-if __name__ == "__main__":
-    print(get_git_metadata())
-    print(get_system_metadata())
-    print(get_python_metadata())
-    print(get_gpu_metadata())
-    print(get_path_metadata())
-    print(get_command_history())
