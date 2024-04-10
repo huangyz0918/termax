@@ -1,4 +1,3 @@
-import os
 import click
 from rich.console import Console
 
@@ -73,7 +72,7 @@ def guess():
         click.echo(f"General section not found. Running config setup...")
         build_config(general=True)
         config_dict = configuration.read()
-    
+
     platform = config_dict['general']['platform']
     if not configuration.config.has_section(platform):
         click.echo(f"Platform {platform} section not found. Running config setup...")
@@ -116,7 +115,7 @@ def guess():
     if config_dict['general']['show_command'] == "True":
         console.log(command, style="purple")
 
-    try: 
+    try:
         if config_dict['general']['auto_execute'] == "True":
             execute_command(command)
         else:
@@ -128,7 +127,7 @@ def guess():
                     description = model.to_description(prompt.explain_commands(), command)
                 console.log(f"{description}")
     except KeyboardInterrupt:
-        pass    
+        pass
 
 
 @cli.command(default_command=True)
@@ -152,7 +151,7 @@ def generate(text):
         click.echo(f"General section not found. Running config setup...")
         build_config(general=True)
         config_dict = configuration.read()
-    
+
     platform = config_dict['general']['platform']
     if not configuration.config.has_section(platform):
         click.echo(f"Platform {platform} section not found. Running config setup...")

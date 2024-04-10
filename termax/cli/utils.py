@@ -1,6 +1,5 @@
 import os
 import shlex
-import click
 import platform
 
 from termax.prompt import Memory
@@ -122,7 +121,7 @@ def execute_command(command: str):
     os.system(full_command)
 
 
-def save_command(command: str, text: str, config_dict : dict, memory: Memory):
+def save_command(command: str, text: str, config_dict: dict, memory: Memory):
     """
     save_command: save the command into database.
     Args:
@@ -142,4 +141,3 @@ def save_command(command: str, text: str, config_dict : dict, memory: Memory):
 
     if command != '':
         memory.add_query(queries=[{"query": text, "response": command}])
-    
