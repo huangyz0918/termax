@@ -1,5 +1,5 @@
-from .macos import MacFunction
-from .shell import ShellFunction
+from termax.function.openai.macos import MacFunction
+from termax.function.openai.shell import ShellFunction
 
 def get_all_function_schemas():
     """
