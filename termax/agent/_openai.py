@@ -1,7 +1,9 @@
+import json
 import importlib.util
 
 from .types import Model
 from termax.prompt import extract_shell_commands
+from termax.function import get_all_function_schemas, get_all_functions
 
 
 class OpenAIModel(Model):
@@ -75,10 +77,31 @@ class OpenAIModel(Model):
         completion = self.client.chat.completions.create(
             model=self.version,
             messages=chat_history,
-            temperature=self.temperature
+            temperature=self.temperature,
+            functions=get_all_function_schemas()
         )
-        response = completion.choices[0].message.content
-        return extract_shell_commands(response)
+
+        function = completion.choices[0].message.function_call
+        if function:
+            chat_history.append(
+                {
+                    "role": "assistant",
+                    "content": "",
+                    "function_call": {
+                        "name": function.name,
+                        "arguments": function.arguments
+                    },
+                }
+            )
+
+            for f in get_all_functions():
+                if f.openai_schema["name"] == function.name:
+                    f.execute(**json.loads(function.arguments))
+
+            return None
+        else:
+            response = completion.choices[0].message.content
+            return extract_shell_commands(response)
 
     def to_description(self, prompt, command):
         """

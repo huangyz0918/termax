@@ -166,11 +166,16 @@ def generate(text):
         # loop until the generated command is not ''.
         while True:
             command = model.to_command(prompt.gen_commands(text), text)
+            if command is None:
+                break
             if command != '':
                 if not command.startswith('t ') and not command.startswith('termax '):
                     break
                 else:
                     text = text + ", do not use command t or termax."
+
+    if command is None:
+        return
 
     if config_dict['general']['show_command'] == "True":
         console.log(command, style="purple")
