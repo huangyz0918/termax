@@ -17,7 +17,7 @@ def extract_code_from_markdown(markdown_text, separator="\n\n"):
 def extract_shell_commands(output):
     commands_start = "Commands: "
     commands_index = output.find(commands_start)
-    
+
     command_start = "Command: "
     command_index = output.find(command_start)
 
@@ -29,3 +29,35 @@ def extract_shell_commands(output):
         commands = extract_code_from_markdown(output)
 
     return commands
+
+
+def process_mac_script(text):
+    """
+    Process a script string to remove "osascript -e" and extra quotes,
+    then ensure it's wrapped within a single pair of single quotes.
+
+    Args:
+    - text (str): The input text potentially containing "osascript -e" and multiple quotes.
+
+    Returns:
+    - str: The processed text wrapped within single quotes.
+    """
+    processed_text = re.sub(r'^\s*osascript -e\s*', '', text)
+    processed_text = remove_quotes(processed_text)
+    return f"'{processed_text}'"
+
+
+def remove_quotes(input_string):
+    """
+    Remove all single and double quotes from the beginning and end of the input string.
+
+    Args:
+    - input_string (str): The string from which to remove leading and trailing quotes.
+
+    Returns:
+    - str: The modified string with leading and trailing quotes removed.
+    """
+    # Use a regular expression to remove leading and trailing quotes
+    # The pattern looks for quotes at the start (^["']+) and end (["']+$) of the string and removes them
+    modified_string = re.sub(r'^["\']+|["\']+$', '', input_string)
+    return modified_string

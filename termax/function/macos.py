@@ -1,8 +1,9 @@
-import shlex
 import subprocess
 
-from instructor import OpenAISchema
 from pydantic import Field
+from instructor import OpenAISchema
+
+from termax.prompt import process_mac_script
 
 
 class MacFunction(OpenAISchema):
@@ -22,5 +23,4 @@ class MacFunction(OpenAISchema):
 
     @classmethod
     def execute(cls, script):
-        commands = ["osascript", "-e", script]
-        return " ".join(shlex.quote(part) for part in commands)
+        return " ".join(["osascript", "-e", process_mac_script(script)])
