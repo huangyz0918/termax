@@ -1,3 +1,4 @@
+import shlex
 import subprocess
 
 from instructor import OpenAISchema
@@ -21,13 +22,5 @@ class MacFunction(OpenAISchema):
 
     @classmethod
     def execute(cls, script):
-        script_command = ["osascript", "-e", script]
-        try:
-            process = subprocess.Popen(
-                script_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            )
-            output, _ = process.communicate()
-            output = output.decode("utf-8").strip()
-            return f"Output: {output}"
-        except Exception as e:
-            return f"Error: {e}"
+        commands = ["osascript", "-e", script]
+        return " ".join(shlex.quote(part) for part in commands)
