@@ -93,11 +93,10 @@ class OpenAIModel(Model):
                     },
                 }
             )
-
+            
             for f in get_all_functions():
                 if f.openai_schema["name"] == function.name:
                     return f.execute(**json.loads(function.arguments))
-
         else:
             response = completion.choices[0].message.content
             return extract_shell_commands(response)
