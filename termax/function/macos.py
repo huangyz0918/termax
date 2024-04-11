@@ -14,7 +14,7 @@ class MacFunction(OpenAISchema):
 
     script: str = Field(
         ...,
-        example='tell application "Finder" to get the name of every disk',
+        example='tell application "Terminal" to display dialog "Hello World"',
         descriptions="Apple Script to execute.",
     )
 
