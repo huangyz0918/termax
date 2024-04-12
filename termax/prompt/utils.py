@@ -43,7 +43,8 @@ def process_mac_script(text):
     - str: The processed text wrapped within single quotes.
     """
     processed_text = re.sub(r'^\s*osascript -e\s*', '', text)
-    processed_text = remove_quotes(processed_text)
+    if (processed_text.startswith('"') and processed_text.endswith('"')) or (processed_text.startswith("'") and processed_text.endswith("'")):
+        processed_text = remove_quotes(processed_text)
     return f"'{processed_text}'"
 
 
