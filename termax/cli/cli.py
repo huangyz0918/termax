@@ -179,6 +179,7 @@ def generate(text, print_cmd=False):
 
     if print_cmd:
         print(command)
+        # TODO: improve the RAG compatibility using the shell plugin.
         # the command generate using the shell plugin will not be saved in the memory.
         # save_command(command, text, config_dict, memory)
     else:
@@ -186,22 +187,24 @@ def generate(text, print_cmd=False):
             console.log(command, style="purple")
 
         choice = None
+        command_success = False
         try:
             if config_dict['general']['auto_execute'] == "True":
-                execute_command(command)
+                command_success = execute_command(command)
             else:
                 choice = qa_confirm()
                 if choice == 0:
-                    execute_command(command)
+                    command_success = execute_command(command)
                 elif choice == 2:
                     with console.status(f"[cyan]Generating..."):
                         description = model.to_description(prompt.explain_commands(), command)
                     console.log(f"{description}")
         except KeyboardInterrupt:
-            pass
+            command_success = True
         finally:
             if config_dict['general']['auto_execute'] == "True" or choice == 0:
-                save_command(command, text, config_dict, memory)
+                if command_success:
+                    save_command(command, text, config_dict, memory)
 
 
 @cli.command()
@@ -236,12 +239,18 @@ def uninstall(name: str):
 
 
 @cli.command()
-def rag():
+@click.option('--clear', '-c', is_flag=True, help="Clear the memory.")
+def rag(clear: bool = False):
     """
     Show all the historical commands in the RAG.
     """
     console = Console()
     commands = memory.get()
+
+    if clear:
+        memory.delete()
+        console.log("Memory cleared successfully.")
+        return
 
     if commands:
         metadatas = commands['metadatas']

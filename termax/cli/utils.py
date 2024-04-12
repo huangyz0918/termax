@@ -1,6 +1,6 @@
 import os
-import shlex
 import platform
+import subprocess
 
 from termax.prompt import Memory
 from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
@@ -101,24 +101,34 @@ def load_model():
     return model
 
 
-def execute_command(command: str):
+def execute_command(command: str) -> bool:
     """
-    execute_command: execute the command.
-    Args:
-        command: the command to execute.
-    """
-    if platform.system() == "Windows":
-        is_powershell = len(os.getenv("PSModulePath", "").split(os.pathsep)) >= 3
-        full_command = (
-            f'powershell.exe -Command "{command}"'
-            if is_powershell
-            else f'cmd.exe /c "{command}"'
-        )
-    else:
-        shell = os.environ.get("SHELL", "/bin/sh")
-        full_command = f"{shell} -c {shlex.quote(command)}"
+    Execute a command and return whether it was successful.
 
-    os.system(full_command)
+    Args:
+        command: The command to execute.
+
+    Returns:
+        True if the command succeeded, False otherwise.
+    """
+    try:
+        if platform.system() == "Windows":
+            is_powershell = len(os.getenv("PSModulePath", "").split(os.pathsep)) >= 3
+            if is_powershell:
+                # Powershell execution
+                completed = subprocess.run(['powershell.exe', '-Command', command], check=True)
+            else:
+                # CMD execution
+                completed = subprocess.run(['cmd.exe', '/c', command], check=True)
+        else:
+            # Unix-like shell execution
+            shell = os.environ.get("SHELL", "/bin/sh")
+            completed = subprocess.run([shell, '-c', command], check=True)
+
+        return completed.returncode == 0
+    except subprocess.CalledProcessError:
+        # The command failed
+        return False
 
 
 def save_command(command: str, text: str, config_dict: dict, memory: Memory):
