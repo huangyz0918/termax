@@ -3,7 +3,7 @@ import importlib.util
 
 from .types import Model
 from termax.prompt import extract_shell_commands
-from termax.function import get_all_function_schemas, get_all_functions
+from termax.function import get_all_function_schemas, get_function
 
 
 class OpenAIModel(Model):
@@ -63,43 +63,39 @@ class OpenAIModel(Model):
             prompt (str): The prompt.
             text (str): The text.
         """
-        chat_history = [
-            {
-                "role": "system",
-                "content": prompt
-            },
-            {
-                "role": "user",
-                "content": text,
-            }
-        ]
-
-        completion = self.client.chat.completions.create(
-            model=self.version,
-            messages=chat_history,
-            temperature=self.temperature,
-            functions=get_all_function_schemas()
-        )
-
-        function = completion.choices[0].message.function_call
-        if function:
-            chat_history.append(
-                {
-                    "role": "assistant",
-                    "content": "",
-                    "function_call": {
-                        "name": function.name,
-                        "arguments": function.arguments
-                    },
-                }
+        def _create_completion(chat_history):
+            """
+            Create a completion request to the API.
+            """
+            return self.client.chat.completions.create(
+                model=self.version,
+                messages=chat_history,
+                temperature=self.temperature,
+                functions=get_all_function_schemas()
             )
             
-            for f in get_all_functions():
-                if f.openai_schema["name"] == function.name:
-                    return f.execute(**json.loads(function.arguments))
-        else:
-            response = completion.choices[0].message.content
-            return extract_shell_commands(response)
+        chat_history = [
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": text}
+        ]
+        commands = []
+        while True:
+            completion = _create_completion(chat_history)
+            choice = completion.choices[0]
+            if choice.finish_reason != "function_call":
+                break
+
+            function_call = choice.message.function_call
+            function = get_function(function_call.name)
+            command = function.execute(**json.loads(function_call.arguments))
+            commands.append(command)
+            # Update the chat history for the next iteration
+            chat_history.extend([
+                {"role": "assistant", "content": "", "function_call": {"name": function_call.name, "arguments": function_call.arguments}},
+                {"role": "function", "content": f"Command Used: {command}", "name": function_call.name}
+            ])
+
+        return " && ".join(commands)
 
     def to_description(self, prompt, command):
         """

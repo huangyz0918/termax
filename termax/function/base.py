@@ -1,5 +1,6 @@
 from termax.function.openai.macos import MacFunction
 from termax.function.openai.shell import ShellFunction
+import subprocess, platform, os
 
 def get_all_function_schemas():
     """
@@ -15,3 +16,9 @@ def get_all_functions():
     :return: a list of functions.
     """
     return [MacFunction, ShellFunction]  # TODO: load all modules dynamically
+
+
+def get_function(name: str):
+    for function in get_all_functions():
+        if function.openai_schema["name"] == name:
+            return function
