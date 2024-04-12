@@ -1,5 +1,3 @@
-import subprocess
-
 from instructor import OpenAISchema
 from pydantic import Field
 

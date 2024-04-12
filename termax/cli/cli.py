@@ -5,6 +5,7 @@ import termax
 from .utils import *
 from termax.utils.const import *
 from termax.prompt import Prompt, Memory
+from termax.plugin import install_plugin, uninstall_plugin
 from termax.utils.metadata import get_command_history
 from termax.utils import Config, CONFIG_PATH, qa_confirm
 
@@ -132,9 +133,13 @@ def guess():
 
 @cli.command(default_command=True)
 @click.argument('text', nargs=-1)
-def generate(text):
+@click.option('--print_cmd', '-p', is_flag=True, help="Print the generated command only.")
+def generate(text, print_cmd=False):
     """
     This function will call and generate the commands from LLM
+    Args:
+        text: the text to be converted into a command.
+        print_cmd: if True, only print the generated command.
     """
     console = Console()
     text = " ".join(text)
@@ -172,25 +177,30 @@ def generate(text):
                 else:
                     text = text + ", do not use command t or termax."
 
-    if config_dict['general']['show_command'] == "True":
-        console.log(command, style="purple")
+    if print_cmd:
+        print(command)
+        save_command(command, text, config_dict, memory)
+    else:
+        if config_dict['general']['show_command'] == "True":
+            console.log(command, style="purple")
 
-    try:
-        if config_dict['general']['auto_execute'] == "True":
-            execute_command(command)
-        else:
-            choice = qa_confirm()
-            if choice == 0:
+        choice = None
+        try:
+            if config_dict['general']['auto_execute'] == "True":
                 execute_command(command)
-            elif choice == 2:
-                with console.status(f"[cyan]Generating..."):
-                    description = model.to_description(prompt.explain_commands(), command)
-                console.log(f"{description}")
-    except KeyboardInterrupt:
-        pass
-    finally:
-        if config_dict['general']['auto_execute'] == "True" or choice == 0:
-            save_command(command, text, config_dict, memory)
+            else:
+                choice = qa_confirm()
+                if choice == 0:
+                    execute_command(command)
+                elif choice == 2:
+                    with console.status(f"[cyan]Generating..."):
+                        description = model.to_description(prompt.explain_commands(), command)
+                    console.log(f"{description}")
+        except KeyboardInterrupt:
+            pass
+        finally:
+            if config_dict['general']['auto_execute'] == "True" or choice == 0:
+                save_command(command, text, config_dict, memory)
 
 
 @cli.command()
@@ -202,11 +212,32 @@ def config(general):
     build_config(general)
 
 
-# a command to show all the commands in the memory
+@cli.command()
+@click.option('--name', '-n', type=str, required=True, help='Name of the plugin to install')
+def install(name: str):
+    """
+    Install the plugin.
+    Args:
+        name: the name of the plugin, should be in the PLUGIN_LIST.
+    """
+    install_plugin(name)
+
+
+@cli.command()
+@click.option('--name', '-n', type=str, required=True, help='Name of the plugin to uninstall')
+def uninstall(name: str):
+    """
+    Uninstall the plugin.
+    Args:
+        name: the name of the plugin, should be in the PLUGIN_LIST.
+    """
+    uninstall_plugin(name)
+
+
 @cli.command()
 def rag():
     """
-    Show all the commands in the RAG.
+    Show all the historical commands in the RAG.
     """
     console = Console()
     commands = memory.get()
