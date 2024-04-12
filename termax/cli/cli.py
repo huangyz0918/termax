@@ -179,7 +179,8 @@ def generate(text, print_cmd=False):
 
     if print_cmd:
         print(command)
-        save_command(command, text, config_dict, memory)
+        # the command generate using the shell plugin will not be saved in the memory.
+        # save_command(command, text, config_dict, memory)
     else:
         if config_dict['general']['show_command'] == "True":
             console.log(command, style="purple")
