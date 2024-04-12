@@ -5,6 +5,8 @@ from typing import List, Dict
 import chromadb
 from chromadb.utils import embedding_functions
 
+chromadb.logger.setLevel(chromadb.logging.ERROR)
+
 from termax.utils.const import *
 from termax.utils.metadata import *
 from termax.utils import Config, CONFIG_HOME
