@@ -64,14 +64,8 @@ class OpenAIModel(Model):
             text (str): The text.
         """
         chat_history = [
-            {
-                "role": "system",
-                "content": prompt
-            },
-            {
-                "role": "user",
-                "content": text,
-            }
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": text}
         ]
 
         completion = self.client.chat.completions.create(
@@ -83,17 +77,6 @@ class OpenAIModel(Model):
 
         function = completion.choices[0].message.function_call
         if function:
-            chat_history.append(
-                {
-                    "role": "assistant",
-                    "content": "",
-                    "function_call": {
-                        "name": function.name,
-                        "arguments": function.arguments
-                    },
-                }
-            )
-            
             for f in get_all_functions():
                 if f.openai_schema["name"] == function.name:
                     return f.execute(**json.loads(function.arguments))
