@@ -1,6 +1,5 @@
 from termax.function.openai.macos import MacFunction
 from termax.function.openai.shell import ShellFunction
-import subprocess, platform, os
 
 def get_all_function_schemas():
     """
