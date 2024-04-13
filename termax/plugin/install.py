@@ -40,6 +40,27 @@ def install_bash():
     console.log("Bash plugin installed successfully.", style="green")
 
 
+def install_fish():
+    """
+    Install the Fish plugin.
+    """
+    console = Console()
+    with console.status(f"[cyan]Installing plugin Fish: ..."):
+        try:
+            home_path = str(Path.home())
+            fish_plugin_path = os.path.join(home_path, ".config/fish/config.fish")
+            fish_function_path = os.path.join(home_path, ".config/fish/functions/termax_fish.fish")
+
+            with open(fish_plugin_path, "a", encoding="utf-8") as file:
+                file.write(fish_plugin)
+            with open(fish_function_path, "a", encoding="utf-8") as file:
+                file.write(fish_function)
+            
+        except Exception as e:
+            console.log(f"Failed to install Fish plugin: {e}", style="red")
+    console.log("Fish plugin installed successfully.", style="green")
+
+
 def install_plugin(plugin_name: str):
     """
     Install the plugin.
@@ -53,5 +74,7 @@ def install_plugin(plugin_name: str):
         install_zsh()
     elif plugin_name == PLUGIN_SHELL_BASH:
         install_bash()
+    elif plugin_name == PLUGIN_SHELL_FISH:
+        install_fish()
     else:
         raise ValueError(f"Plugin {plugin_name} is not supported.")

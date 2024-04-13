@@ -312,10 +312,14 @@ def get_command_history():
             shell_type = 'bash'
             history_file = os.path.join(os.environ['HOME'], '.bash_history')
             history_format = 'plain'
-        elif 'zsh' in shell:
+        elif 'zsh' in shell or 'fish' in shell:
             shell_type = 'zsh'
             history_file = os.path.join(os.environ['HOME'], '.zsh_history')
             history_format = 'with_time'
+        # elif 'fish' in shell: # [TODO] Add a support for fish shell
+        #     shell_type = 'fish'
+        #     history_file = os.path.join(os.environ['HOME'], '.fish_history')
+        #     history_format = 'yaml'
         # Add additional elif blocks for other shells like fish, tcsh, etc.
         else:
             raise ValueError(f"Shell not supported or history file unknown for shell: {shell}")
