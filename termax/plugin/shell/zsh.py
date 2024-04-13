@@ -22,7 +22,7 @@ _termax_zsh() {
         while kill -0 $pid 2>/dev/null; do
             BUFFER=" ${spinner[i++ % ${#spinner[@]}]}"
             zle reset-prompt
-            sleep 0.5
+            sleep 0.3
         done
 
         # Wait for the background process to finish
