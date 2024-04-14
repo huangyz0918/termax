@@ -3,6 +3,9 @@ fish_function = """
 function termax_fish
     set -l _buffer (commandline)
     if test -n "$_buffer"
+        set -l BUFFER "new command here"
+        commandline $BUFFER
+        commandline -f end-of-line
         set -l BUFFER (t termax -p "$_buffer")
         commandline $BUFFER
         commandline -f end-of-line
