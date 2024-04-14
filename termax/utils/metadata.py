@@ -312,15 +312,14 @@ def get_command_history():
             shell_type = 'bash'
             history_file = os.path.join(os.environ['HOME'], '.bash_history')
             history_format = 'plain'
-        elif 'zsh' in shell or 'fish' in shell:
+        elif 'zsh' in shell:
             shell_type = 'zsh'
             history_file = os.path.join(os.environ['HOME'], '.zsh_history')
             history_format = 'with_time'
-        # elif 'fish' in shell: # [TODO] Add a support for fish shell
-        #     shell_type = 'fish'
-        #     history_file = os.path.join(os.environ['HOME'], '.fish_history')
-        #     history_format = 'yaml'
-        # Add additional elif blocks for other shells like fish, tcsh, etc.
+        elif 'fish' in shell: # [TODO] Add a support for fish shell
+            shell_type = 'fish'
+            history_file = os.path.join(os.environ['HOME'], '.local/share/fish/fish_history')
+            history_format = 'yaml'
         else:
             raise ValueError(f"Shell not supported or history file unknown for shell: {shell}")
 
@@ -351,6 +350,20 @@ def get_command_history():
                                 'command': match.group(2).strip(),
                                 'time': formatted_time
                             })
+                    elif history_format == 'yaml' and shell_type == 'fish':
+                        if decoded_line.startswith('- cmd:'):
+                            command_match = re.match(r'^- cmd: (.*)', decoded_line)
+                            command = command_match.group(1).strip() if command_match else None
+                        if decoded_line.startswith('when:'):
+                            time_match = re.match(r'^when: (\d+)', decoded_line)
+                            if time_match:
+                                epoch_time = int(time_match.group(1))
+                                datetime_obj = datetime.fromtimestamp(epoch_time)
+                                formatted_time = datetime_obj.strftime('%Y-%m-%d %H:%M:%S')
+                                history_lines.append({
+                                    'command': command,
+                                    'time': formatted_time
+                                })
                     else:
                         history_lines.append({'command': decoded_line, 'time': None})
                 except UnicodeDecodeError:
