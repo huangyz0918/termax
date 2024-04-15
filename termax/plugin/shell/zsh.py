@@ -20,8 +20,9 @@ _termax_zsh() {
         i=0
         # Display spinner until the process has finished
         while kill -0 $pid 2>/dev/null; do
-            BUFFER=" ${spinner[i++ % ${#spinner[@]}]}"
+            BUFFER="${spinner[i++ % ${#spinner[@]}]}"
             zle reset-prompt
+            zle end-of-line
             sleep 0.3
         done
 
