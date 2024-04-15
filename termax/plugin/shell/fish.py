@@ -3,12 +3,16 @@ fish_function = """
 function termax_fish
     set -l _buffer (commandline)
     if test -n "$_buffer"
-        set -l BUFFER "new command here"
+        t termax -p "$_buffer" > /tmp/termax_output.txt &
+        set -l job_id $last_pid
+        while kill -0 $job_id 2>/dev/null
+            commandline -a "."
+            sleep 1 
+        end
+        set -l BUFFER (cat /tmp/termax_output.txt)
+        rm /tmp/termax_output.txt
         commandline $BUFFER
-        commandline -f end-of-line
-        set -l BUFFER (t termax -p "$_buffer")
-        commandline $BUFFER
-        commandline -f end-of-line
+        # commandline -f end-of-line
     end
 end
 # ====== Termax Fish Plugin End ======
