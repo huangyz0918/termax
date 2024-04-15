@@ -7,7 +7,7 @@ function termax_fish
         set -l job_id $last_pid
         while kill -0 $job_id 2>/dev/null
             commandline -a "."
-            sleep 1 
+            sleep 1
         end
         set -l BUFFER (cat /tmp/termax_output.txt)
         rm /tmp/termax_output.txt
