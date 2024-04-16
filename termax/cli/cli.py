@@ -101,6 +101,7 @@ def guess():
         # Guess the intent based on the initial history
         prompt_intent = prompt.intent_detect()
         intent = model.guess_command(initial_history, prompt_intent)
+        if not intent: return
 
         # Filter and format history including commands related to the guessed intent
         related_history = filter_and_format_history(
@@ -112,6 +113,8 @@ def guess():
         # Generate suggestions and guess the final command
         prompt_guess = prompt.gen_suggestions(intent)
         command = model.guess_command(related_history, prompt_guess)
+        if not command: return
+
 
     if config_dict['general']['show_command'] == "True":
         console.log(command, style="purple")
@@ -171,7 +174,9 @@ def generate(text, print_cmd=False):
         # loop until the generated command is not ''.
         while True:
             command = model.to_command(prompt.gen_commands(text), text)
-            if command != '':
+            if not command:
+                return
+            elif command != '':
                 if not command.startswith('t ') and not command.startswith('termax '):
                     break
                 else:

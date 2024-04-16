@@ -9,7 +9,7 @@ _termax_bash() {
 
         READLINE_LINE=$(t termax -p "$_termax_prev_line")
         kill "$SPIN_PID"
-        printf "\r%s" "DONE.         "
+        printf "\r%s" "                 "
         echo " "
         READLINE_POINT=${#READLINE_LINE}
     fi
