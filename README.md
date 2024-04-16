@@ -19,6 +19,33 @@ It is featured by:
 pip install termax
 ```
 
+## Quick Start
+
+After installation, you'll need to configure the LLM. A setup guide will automatically launch the first time you use Termax. Alternatively, you can manually initiate configuration at any time by running `t config` or `termax config`.
+
+#### Ask Commands
+
+You can start using Termax by asking using command `t` or `termax`:
+
+```bash
+t show me the top-5 CPU processes
+```
+
+#### Guess Commands (experimental)
+
+Termax can predict your next move based on your command history—just try t guess or termax guess to generate a suggested command. It's not only smart, it's fun!
+
+```bash
+t guess
+```
+
+#### Display the History
+
+We fetch system information to enhance the accuracy of command generation prompts, allowing the LLM to tailor commands more effectively. You can check the RAG information by `t rag` or `termax rag`.
+
+
+## Contributing 
+
 For developers, you can install from source code to enable the latest features and bug fixes.
 
 ```bash:
@@ -26,9 +53,11 @@ cd <root of this project>
 pip install -e .
 ```
 
-## Quick Start
+## License
 
-```bash
-t --help
-```
+Licensed under the [Apache License, Version 2.0](LICENSE).
+
+
+
+
 
