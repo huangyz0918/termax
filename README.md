@@ -1,5 +1,4 @@
-<br/>
-<p align="center"> <img src="doc/icon_text.svg" alt="..." width=160>
+
 
 # Termax
 
@@ -7,6 +6,9 @@
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/termax) ![GitHub License](https://img.shields.io/github/license/huangyz0918/termax)
 
 Termax is an LLM agent in your terminal that converts natural language to commands.
+
+<br/>
+<p align="center"> <img src="doc/icon_text.svg" alt="..." width=300>
 
 It is featured by:
 
