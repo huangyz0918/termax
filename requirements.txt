@@ -4,7 +4,6 @@ openai
 inquirer~=3.2.4
 chromadb~=0.4.24
 psutil~=5.9.8
-termax~=0.0.1
 instructor~=0.6.8
 pydantic~=2.6.4
 setuptools~=68.2.2
