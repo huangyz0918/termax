@@ -45,7 +45,7 @@ t guess
 ```
 
 
-## Plugin
+## Shell Plugin
 
 We support various shells like `bash`, `zsh` and `fish`. You can choose to install the plugins by
 
