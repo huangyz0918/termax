@@ -60,6 +60,8 @@ Here is an example that Termax guesses my next move:
 
 ![](docs/guess.gif)
 
+⚠️ This feature will insert the latest 15 shell command history into LLM prompt, if you have sensitive information, please do not use it.
+
 
 ## Shell Plugin
 
@@ -102,6 +104,7 @@ save = False
 
 > [!TIP]
 > * The configuration file is stored at `<HOME>/.termax`, so as the vector database.
+> * For other LLMs than OpenAI, you need to install the client manually.
 > * We utilize [ChromaDB](trychroma.com) as the vector database. When using OpenAI, Termax calculates embeddings with OpenAI's `text-embedding-ada-002`. For other cases, we default to Chroma's built-in model.
 
 
