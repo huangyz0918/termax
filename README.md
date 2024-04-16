@@ -47,6 +47,11 @@ Here is a more complex example:
 
 ![](docs/ask_cmd.gif)
 
+ℹ️ **Note:** Be aware of privacy implications. This feature collects the following info into LLM prompt.
+- **System Info:** os, hardware architecture
+- **Path Info:** username, current directory, files in directory
+
+
 ### Guess Commands (experimental)
 
 Termax can predict your next move based on your command history, workspace information, and so on — just try `t guess` or `termax guess` to generate a suggested
@@ -60,7 +65,8 @@ Here is an example that Termax guesses my next move:
 
 ![](docs/guess.gif)
 
-⚠️ This feature will insert the latest 15 shell command history into LLM prompt, if you have sensitive information, please do not use it.
+⚠️ **Caution:** 
+- This feature automatically inserts the last 15 commands from your shell history into the LLM prompt. If your command history contains sensitive information, please refrain from using this feature to ensure your data remains secure.
 
 
 ## Shell Plugin
