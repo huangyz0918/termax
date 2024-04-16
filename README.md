@@ -1,21 +1,17 @@
-
 <br/>
-<p align="center"> <img src="doc/icon.svg" alt="..." width=160>
+<p align="center"> <img src="doc/icon_text.svg" alt="..." width=160>
 
 # Termax
 
-![](https://github.com/huangyz0918/termax/actions/workflows/lint.yml/badge.svg) ![](https://github.com/huangyz0918/termax/actions/workflows/test.yml/badge.svg) ![PyPI - Version](https://img.shields.io/pypi/v/termax) 
-![PyPI - Downloads](https://img.shields.io/pypi/dm/termax) ![GitHub License](https://img.shields.io/github/license/huangyz0918/termax) 
-
+![](https://github.com/huangyz0918/termax/actions/workflows/lint.yml/badge.svg) ![](https://github.com/huangyz0918/termax/actions/workflows/test.yml/badge.svg) ![PyPI - Version](https://img.shields.io/pypi/v/termax)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/termax) ![GitHub License](https://img.shields.io/github/license/huangyz0918/termax)
 
 Termax is an LLM agent in your terminal that converts natural language to commands.
-
-
 
 It is featured by:
 
 - 🍼 Personalized Experience: Optimize the command generation with RAG.
-- 📐 Supports various LLMs: OpenAI GPT, Anthropic Claude, Google Gemini, Mistral AI, and more. 
+- 📐 Supports various LLMs: OpenAI GPT, Anthropic Claude, Google Gemini, Mistral AI, and more.
 - 🧩 Shell Extensions: Plugin with popular shells like `zsh`, `bash` and `fish`.
 
 ## Installation
@@ -26,7 +22,8 @@ pip install termax
 
 ## Quick Start
 
-After installation, you'll need to configure the LLM. A setup guide will automatically launch the first time you use Termax. Alternatively, you can manually initiate configuration at any time by running `t config` or `termax config`.
+After installation, you'll need to configure the LLM. A setup guide will automatically launch the first time you use
+Termax. Alternatively, you can manually initiate configuration at any time by running `t config` or `termax config`.
 
 #### Ask Commands
 
@@ -40,7 +37,8 @@ t show me the top-5 CPU processes
 
 #### Guess Commands (experimental)
 
-Termax can predict your next move based on your command history—just try t guess or termax guess to generate a suggested command. It's not only smart, it's fun!
+Termax can predict your next move based on your command history—just try t guess or termax guess to generate a suggested
+command. It's not only smart, it's fun!
 
 ```bash
 t guess
@@ -54,7 +52,8 @@ We support various shells like `bash`, `zsh` and `fish`. You can choose to insta
 t install -n <plugin>
 ```
 
-The `<plugin>` can be any of `zsh`, `bash`, or `fish`. With this plugin, you can directly convert natural language into commands using the Ctrl + K shortcut.
+The `<plugin>` can be any of `zsh`, `bash`, or `fish`. With this plugin, you can directly convert natural language into
+commands using the Ctrl + K shortcut.
 
 ![](doc/plugin.gif)
 
@@ -66,8 +65,7 @@ t uninstall -n <plugin>
 
 Remember to source your shell or restart it after installing or uninstalling plugins to apply changes.
 
-
-## Contributing 
+## Contributing
 
 For developers, you can install from source code to enable the latest features and bug fixes.
 
@@ -76,8 +74,8 @@ cd <root of this project>
 pip install -e .
 ```
 
-We are using [PEP8](https://peps.python.org/pep-0008/) as our coding standard, please read and follow it in case there are CI errors.
-
+We are using [PEP8](https://peps.python.org/pep-0008/) as our coding standard, please read and follow it in case there
+are CI errors.
 
 ## License
 
