@@ -1,5 +1,3 @@
-
-
 # Termax
 
 ![](https://github.com/huangyz0918/termax/actions/workflows/lint.yml/badge.svg) ![](https://github.com/huangyz0918/termax/actions/workflows/test.yml/badge.svg) ![PyPI - Version](https://img.shields.io/pypi/v/termax)
@@ -8,7 +6,7 @@
 Termax is an LLM agent in your terminal that converts natural language to commands.
 
 <br/>
-<p align="center"> <img src="doc/icon_text.svg" alt="..." width=300>
+<p align="center"> <img src="docs/icon_text.svg" alt="..." width=300>
 
 It is featured by:
 
@@ -37,7 +35,7 @@ t show me the top-5 CPU processes
 
 Here is a more complex example:
 
-![](doc/ask_cmd.gif)
+![](docs/ask_cmd.gif)
 
 #### Guess Commands (experimental)
 
@@ -47,8 +45,6 @@ command. It's not only smart, it's fun!
 ```bash
 t guess
 ```
-
-
 
 ## Shell Plugin
 
@@ -61,7 +57,7 @@ t install -n <plugin>
 The `<plugin>` can be any of `zsh`, `bash`, or `fish`. With this plugin, you can directly convert natural language into
 commands using the Ctrl + K shortcut.
 
-![](doc/plugin.gif)
+![](docs/plugin.gif)
 
 You can also easily uninstall the plugin by:
 
