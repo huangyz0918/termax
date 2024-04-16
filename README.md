@@ -37,6 +37,12 @@ You can start using Termax by asking using command `t` or `termax`, for example:
 t show me the top-5 CPU processes
 ```
 
+You can also use Termax to control your software:
+
+```bash
+t play a song using Spotify
+```
+
 Here is a more complex example:
 
 ![](docs/ask_cmd.gif)
