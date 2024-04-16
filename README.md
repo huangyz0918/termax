@@ -56,6 +56,8 @@ command. It's not only smart, it's fun!
 t guess
 ```
 
+Here is an example that Termax guesses my next move:
+
 ![](docs/guess.gif)
 
 
