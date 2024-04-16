@@ -76,6 +76,9 @@ cd <root of this project>
 pip install -e .
 ```
 
+We are using [PEP8](https://peps.python.org/pep-0008/) as our coding standard, please read and follow it in case there are CI errors.
+
+
 ## License
 
 Licensed under the [Apache License, Version 2.0](LICENSE).
