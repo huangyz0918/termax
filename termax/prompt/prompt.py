@@ -16,7 +16,8 @@ class Prompt:
         # TODO: make the sync of system related metadata once happened at the initialization
         self.system_metadata = get_system_metadata()
         self.path_metadata = get_path_metadata()
-        self.command_history = get_command_history()
+        self.files = get_file_metadata()
+        self.command_history = get_command_history() # command history should only be used for command guessing function.
 
         # share the same memory instance.
         if memory is None:
@@ -24,13 +25,118 @@ class Prompt:
         else:
             self.memory = memory
 
+
+    def gen_commands(self, text: str, model: str = CONFIG_SEC_OPENAI):
+        """
+        [Prompt] Convert the natural language text to the commands.
+        Args:
+            text: the natural language text.
+            model: the model to use, default is OpenAI.
+        """
+        # query the history database to get similar samples
+        samples = self.memory.query([text])
+        metadatas = samples['metadatas'][0]
+        documents = samples['documents'][0]
+        distances = samples['distances'][0]
+
+        # construct a string that contains the samples in a human-readable format
+        sample_string = ""
+        for i in range(len(documents)):
+            sample_string += f"""
+            User Input: {documents[i]}
+            Generated Commands: {metadatas[i]['response']}
+            Distance Score: {distances[i]}
+            Date: {metadatas[i]['created_at']}\n
+            """
+
+        # refresh the metadata
+        if model == CONFIG_SEC_OPENAI:
+            return textwrap.dedent(
+                f"""\
+                You are an shell expert, you can convert natural language text from user to shell commands.
+                
+                1. Please provide only shell commands for os without any description.
+                2. Ensure the output is a valid shell command.
+                3. If multiple steps required try to combine them together.
+                
+                Here are some rules you need to follow:
+
+                1. The commands should be able to run on the current system according to the system information.
+                2. The files in the commands should be available in the path, according to the path information.
+                3. The CLI application should be installed in the system (check the path information).
+
+                Here are some information you may need to know:
+                
+                [INFORMATION] The user's current system information:
+                1. OS: {self.system_metadata['platform']}
+                2. OS Version: {self.system_metadata['platform_version']}
+                3. Architecture: {self.system_metadata['architecture']}
+                
+                [INFORMATION] The user's current PATH information:
+                1. User: {self.path_metadata['user']}
+                2. Current PATH: {self.path_metadata['current_directory']}
+                3. Files under the current directory: {self.files['files']}
+                4. Directories under the current directory: {self.files['directory']}
+                5. Invisible files under the current directory: {self.files['invisible_files']}
+                6. Invisible directories under the current directory: {self.files['invisible_directory']}
+                
+                Here are some similar commands generated before:
+                
+                {sample_string}
+                """
+            )
+        else:
+            # TODO: add more models specific prompt
+            return textwrap.dedent(
+                f"""\
+                You are an shell expert, you can convert this text to shell commands.
+                
+                1. Please provide only shell commands for os without any description.
+                2. Ensure the output is a valid shell command.
+                3. If multiple steps required try to combine them together.
+                
+                Here are some rules you need to follow:
+                
+                1. The commands should be able to run on the current system according to the system information.
+                2. The files in the commands should be available in the path, according to the path information.
+                3. The CLI application should be installed in the system (check the path information).
+                
+                Here are some information you may need to know:
+
+                Current system information (in dict format): {self.system_metadata}
+                
+                The user's system PATH information (in dict format): {self.path_metadata}
+                
+                Here are some similar commands generated before:
+
+                {sample_string}
+                
+                The output shell commands is (please replace the `{{commands}}` with the actual commands):
+
+                Commands: ${{commands}}
+                """
+            )
+        
+
+    def explain_commands(self, model: str = CONFIG_SEC_OPENAI):
+        """
+        [Prompt] Explain the shell commands.
+        Args:
+            model: the model to use, default is OpenAI.
+        """
+        if model == CONFIG_SEC_OPENAI:
+            return f"Help me describe this command:"
+        else:
+            # TODO: add more models specific prompt
+            return f"Help me describe this command:"
+
+
     def intent_detect(self, model: str = CONFIG_SEC_OPENAI):
         """
         [Prompt] Detect the intent of code type based on the command history.
         Args:
             model: the model to use, default is OpenAI.
         """
-        files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:
             return textwrap.dedent(
                 f"""\
@@ -49,10 +155,10 @@ class Prompt:
                 
                 1. User: {self.path_metadata['user']}
                 2. Current PATH: {self.path_metadata['current_directory']}
-                3. Files under the current directory: {files['files']}
-                4. Directories under the current directory: {files['directory']}
-                5. Invisible files under the current directory: {files['invisible_files']}
-                6. Invisible directories under the current directory: {files['invisible_directory']}
+                3. Files under the current directory: {self.files['files']}
+                4. Directories under the current directory: {self.files['directory']}
+                5. Invisible files under the current directory: {self.files['invisible_files']}
+                6. Invisible directories under the current directory: {self.files['invisible_directory']}
 
                 [INFORMATION] The current time: {datetime.now().isoformat()}
 
@@ -83,10 +189,10 @@ class Prompt:
                 
                 1. User: {self.path_metadata['user']}
                 2. Current PATH: {self.path_metadata['current_directory']}
-                3. Files under the current directory: {files['files']}
-                4. Directories under the current directory: {files['directory']}
-                5. Invisible files under the current directory: {files['invisible_files']}
-                6. Invisible directories under the current directory: {files['invisible_directory']}
+                3. Files under the current directory: {self.files['files']}
+                4. Directories under the current directory: {self.files['directory']}
+                5. Invisible files under the current directory: {self.files['invisible_files']}
+                6. Invisible directories under the current directory: {self.files['invisible_directory']}
                 
                 [INFORMATION] The current time: {datetime.now().isoformat()}
 
@@ -98,6 +204,7 @@ class Prompt:
                 Command: ${{primary_command}}
                 """
             )
+
 
     def gen_suggestions(self, primary: str, model: str = CONFIG_SEC_OPENAI):
         """
@@ -115,12 +222,11 @@ class Prompt:
         else:
             primary_data = 'None'
 
-        files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:
             return textwrap.dedent(
                 f"""\
                 You are an shell expert, you need to infer the next command based on the provided list
-                 of command history entries.
+                of command history entries.
                 
                 [INFORMATION] The user's current system information:
                 
@@ -132,10 +238,10 @@ class Prompt:
 
                 1. User: {self.path_metadata['user']}
                 2. Current PATH: {self.path_metadata['current_directory']}
-                3. Files under the current directory: {files['files']}
-                4. Directories under the current directory: {files['directory']}
-                5. Invisible files under the current directory: {files['invisible_files']}
-                6. Invisible directories under the current directory: {files['invisible_directory']}
+                3. Files under the current directory: {self.files['files']}
+                4. Directories under the current directory: {self.files['directory']}
+                5. Invisible files under the current directory: {self.files['invisible_files']}
+                6. Invisible directories under the current directory: {self.files['invisible_directory']}
                 
                 [INFORMATION] The current time: {datetime.now().isoformat()}
 
@@ -168,10 +274,10 @@ class Prompt:
 
                 1. User: {self.path_metadata['user']}
                 2. Current PATH: {self.path_metadata['current_directory']}
-                3. Files under the current directory: {files['files']}
-                4. Directories under the current directory: {files['directory']}
-                5. Invisible files under the current directory: {files['invisible_files']}
-                6. Invisible directories under the current directory: {files['invisible_directory']}
+                3. Files under the current directory: {self.files['files']}
+                4. Directories under the current directory: {self.files['directory']}
+                5. Invisible files under the current directory: {self.files['invisible_files']}
+                6. Invisible directories under the current directory: {self.files['invisible_directory']}
 
                 [INFORMATION] The current time: {datetime.now().isoformat()}
                 
@@ -184,105 +290,6 @@ class Prompt:
                 
                 The output shell commands is (please replace the `{{commands}}` with the actual commands):
                 
-                Commands: ${{commands}}
-                """
-            )
-
-    def explain_commands(self, model: str = CONFIG_SEC_OPENAI):
-        """
-        [Prompt] Explain the shell commands.
-        Args:
-            model: the model to use, default is OpenAI.
-        """
-        if model == CONFIG_SEC_OPENAI:
-            return f"Help me describe this command:"
-        else:
-            # TODO: add more models specific prompt
-            return f"Help me describe this command:"
-
-    def gen_commands(self, text: str, model: str = CONFIG_SEC_OPENAI):
-        """
-        [Prompt] Convert the natural language text to the commands.
-        Args:
-            text: the natural language text.
-            model: the model to use, default is OpenAI.
-        """
-        # query the history database to get similar samples
-        samples = self.memory.query([text])
-        metadatas = samples['metadatas'][0]
-        documents = samples['documents'][0]
-        distances = samples['distances'][0]
-
-        # construct a string that contains the samples in a human-readable format
-        sample_string = ""
-        for i in range(len(documents)):
-            sample_string += f"""
-            User Input: {documents[i]}
-            Generated Commands: {metadatas[i]['response']}
-            Distance Score: {distances[i]}
-            Date: {metadatas[i]['created_at']}\n
-            """
-
-        # refresh the metadata
-        self.command_history = get_command_history()
-        if model == CONFIG_SEC_OPENAI:
-            return textwrap.dedent(
-                f"""\
-                You are an shell expert, you can convert natural language text from user to shell commands.
-                
-                1. Please provide only shell commands for os without any description.
-                2. Ensure the output is a valid shell command.
-                3. If multiple steps required try to combine them together.
-                
-                Here are some rules you need to follow:
-
-                1. The commands should be able to run on the current system according to the system information.
-                2. The files in the commands should be available in the path, according to the path information.
-                3. The CLI application should be installed in the system (check the path information).
-
-                Here are some information you may need to know:
-                
-                Current system information (in dict format): {self.system_metadata}
-                
-                The user's system PATH information (in dict format): {self.path_metadata}
-                
-                The user's command history: {self.command_history["shell_command_history"][:15]}
-                
-                Here are some similar commands generated before:
-                
-                {sample_string}
-                """
-            )
-        else:
-            # TODO: add more models specific prompt
-            return textwrap.dedent(
-                f"""\
-                You are an shell expert, you can convert this text to shell commands.
-                
-                1. Please provide only shell commands for os without any description.
-                2. Ensure the output is a valid shell command.
-                3. If multiple steps required try to combine them together.
-                
-                Here are some rules you need to follow:
-                
-                1. The commands should be able to run on the current system according to the system information.
-                2. The files in the commands should be available in the path, according to the path information.
-                3. The CLI application should be installed in the system (check the path information).
-                
-                Here are some information you may need to know:
-
-                Current system information (in dict format): {self.system_metadata}
-                
-                The user's system PATH information (in dict format): {self.path_metadata}
-                
-                The user's command history: {self.command_history["shell_command_history"][:15]}
-                
-                Here are some similar commands generated before:
-
-                {sample_string}
-                
-                The output shell commands is (please replace the `{{commands}}` with the actual commands):
-
                 Commands: ${{commands}}
                 """
             )

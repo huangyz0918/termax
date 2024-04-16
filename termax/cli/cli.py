@@ -83,18 +83,9 @@ def guess():
     model = load_model()
     # generate the commands from the model, and execute if auto_execute is True
     with console.status(f"[cyan]Guessing..."):
-        def filter_and_format_history(command_history, filter_condition, max_count):
-            """Filter and format command history based on a condition and maximum count."""
-            filtered_history = [f"Command: {entry['command']}\nExecution Date: {entry['time']}\n" for entry in
-                                command_history if filter_condition(entry)][:max_count]
-
-            return "Command History: \n" + "\n".join(filtered_history)
-
-        command_history = get_command_history()['shell_command_history']
-
         # Filter and format history excluding certain commands
         initial_history = filter_and_format_history(
-            command_history,
+            prompt.command_history["shell_command_history"],
             lambda entry: entry['command'] not in ("t guess", "termax guess"),
             COMMAND_HISTORY_COUNT
         )
@@ -105,7 +96,7 @@ def guess():
 
         # Filter and format history including commands related to the guessed intent
         related_history = filter_and_format_history(
-            command_history,
+            prompt.command_history["shell_command_history"],
             lambda entry: intent in entry['command'],
             COMMAND_HISTORY_COUNT // 3
         )

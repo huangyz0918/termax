@@ -151,3 +151,11 @@ def save_command(command: str, text: str, config_dict: dict, memory: Memory):
 
     if command != '':
         memory.add_query(queries=[{"query": text, "response": command}])
+
+
+def filter_and_format_history(command_history, filter_condition, max_count):
+    """Filter and format command history based on a condition and maximum count."""
+    filtered_history = [f"Command: {entry['command']}\nExecution Date: {entry['time']}\n" for entry in
+                        command_history if filter_condition(entry)][:max_count]
+
+    return "Command History: \n" + "\n".join(filtered_history)
