@@ -29,7 +29,6 @@ pip install termax
 > * Alternatively, you can manually initiate configuration at any time by running `t config` or `termax config`.
 
 
-
 #### Ask Commands
 
 You can start using Termax by asking using command `t` or `termax`, for example:
@@ -44,20 +43,16 @@ Here is a more complex example:
 
 #### Guess Commands (experimental)
 
-Termax can predict your next move based on your command history—just try t guess or termax guess to generate a suggested
+Termax can predict your next move based on your command history —just try `t guess` or `termax guess` to generate a suggested
 command. It's not only smart, it's fun!
 
 ```bash
 t guess
 ```
 
-## Configuration
-
-
-
 ## Shell Plugin
 
-We support various shells like `bash`, `zsh` and `fish`. You can choose to install the plugins by:
+We support various shells like `bash`, `zsh`, and `fish`. You can choose to install the plugins by:
 
 ```bash
 t install -n <plugin>
@@ -75,6 +70,29 @@ t uninstall -n <plugin>
 ```
 
 Remember to source your shell or restart it after installing or uninstalling plugins to apply changes.
+
+## Configuration
+
+Termax has a global configuration file that you can customize by editing it. Below is an example of setting up Termax with OpenAI:
+
+```
+[general]                  # general configuration
+platform = openai          # default platform
+auto_execute = False       # execute the generated commands automatically
+show_command = True        # show the generated command
+storage_size = 2000        # the command history's size, default is 2000
+
+[openai]                   # platform-related configuration
+model = gpt-3.5-turbo      # LLM model
+api_key = <your API key>   # API key
+temperature = 0.7
+save = False
+```
+
+> [!TIP]
+> * The configuration file is stored at `<HOME>/.termax`, so as the vector database.
+> * We utilize [ChromaDB](trychroma.com) as the vector database. When using OpenAI, Termax calculates embeddings with OpenAI's `text-embedding-ada-002`. For other cases, we default to Chroma's built-in model.
+
 
 ## Contributing
 
