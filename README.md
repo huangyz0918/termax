@@ -11,7 +11,7 @@ Termax is an LLM agent in your terminal that converts natural language to comman
 It is featured by:
 
 - 🍼 Personalized Experience: Optimize the command generation with RAG.
-- 📐 Supports various LLMs: OpenAI GPT, Anthropic Claude, Google Gemini, Mistral AI, Baidu Qianfan, and more.
+- 📐 Supports various LLMs: OpenAI GPT, Anthropic Claude, Google Gemini, Mistral AI, and more.
 - 🧩 Shell Extensions: Plugin with popular shells like `zsh`, `bash` and `fish`.
 
 ## Installation
