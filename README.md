@@ -42,13 +42,13 @@ t guess
 
 ## Plugin
 
-We provided support for various shells like `bash`, `zsh` and `fish`. You can choose to install the plugins by
+We support various shells like `bash`, `zsh` and `fish`. You can choose to install the plugins by
 
 ```bash
 t install -n <plugin>
 ```
 
-The <plugin> can be used with `zsh`, `bash`, or `fish`. With this plugin, you can directly convert natural language into commands using the Ctrl + K shortcut.
+The `<plugin>` can be any of `zsh`, `bash`, or `fish`. With this plugin, you can directly convert natural language into commands using the Ctrl + K shortcut.
 
 You can also easily uninstall the plugin by
 
