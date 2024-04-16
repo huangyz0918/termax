@@ -1,14 +1,17 @@
-# </p> Termax
+# Termax
 
-<p align="center"> <img src="doc/icon.svg" alt="..." width=250>
+<p align="center"> <img src="doc/icon.svg" alt="..." width=300>
 
-Termax is an LLM agent in your terminal to make your life easier.
+![](https://github.com/huangyz0918/termax/actions/workflows/lint.yml/badge.svg) ![](https://github.com/huangyz0918/termax/actions/workflows/test.yml/badge.svg) ![PyPI - Version](https://img.shields.io/pypi/v/termax) 
+![PyPI - Downloads](https://img.shields.io/pypi/dm/termax) ![GitHub License](https://img.shields.io/github/license/huangyz0918/termax) 
 
-With termax, you can
+Termax is an LLM agent in your terminal that converts natural language to commands.
 
-- 🍼 Ask Commands: ask your terminal to execute commands, no need to know them in advance.
-- 📐 Tailor Commands: customize and fix commands for your devices, even those copied from Stack Overflow.
-- 💡 Smart Hint: intelligent suggestions for your next steps.
+It is featured by:
+
+- 🍼 Personalized Experience: Optimize the command generation with RAG.
+- 📐 Supports various LLMs: OpenAI GPT, Anthropic Claude, Google Gemini, Mistral AI, and more. 
+- 🧩 Shell Extensions: Plugin with popular shells like `zsh`, `bash` and `fish`.
 
 ## Installation
 
