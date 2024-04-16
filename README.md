@@ -13,7 +13,7 @@ Termax is an LLM agent in your terminal that converts natural language to comman
 It is featured by:
 
 - 🍼 Personalized Experience: Optimize the command generation with RAG.
-- 📐 Supports various LLMs: OpenAI GPT, Anthropic Claude, Google Gemini, Mistral AI, and more.
+- 📐 Supports various LLMs: OpenAI GPT, Anthropic Claude, Google Gemini, Mistral AI, Baidu Qianfan, and more.
 - 🧩 Shell Extensions: Plugin with popular shells like `zsh`, `bash` and `fish`.
 
 ## Installation
@@ -24,7 +24,7 @@ pip install termax
 
 ## Quick Start
 
-After installation, you'll need to configure the LLM (e.g., setup the OpenAI API Key). A setup guide will automatically launch the first time you use
+After installation, you'll need to configure the LLM (e.g., set the OpenAI API key). A setup guide will automatically launch the first time you use
 Termax. Alternatively, you can manually initiate configuration at any time by running `t config` or `termax config`.
 
 #### Ask Commands
@@ -34,6 +34,8 @@ You can start using Termax by asking using command `t` or `termax`, for example:
 ```bash
 t show me the top-5 CPU processes
 ```
+
+Here is a more complex example:
 
 ![](doc/ask_cmd.gif)
 
@@ -46,9 +48,11 @@ command. It's not only smart, it's fun!
 t guess
 ```
 
+
+
 ## Shell Plugin
 
-We support various shells like `bash`, `zsh` and `fish`. You can choose to install the plugins by
+We support various shells like `bash`, `zsh` and `fish`. You can choose to install the plugins by:
 
 ```bash
 t install -n <plugin>
@@ -59,7 +63,7 @@ commands using the Ctrl + K shortcut.
 
 ![](doc/plugin.gif)
 
-You can also easily uninstall the plugin by
+You can also easily uninstall the plugin by:
 
 ```bash
 t uninstall -n <plugin>
