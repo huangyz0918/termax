@@ -29,7 +29,7 @@ pip install termax
 > * Alternatively, you can manually initiate configuration at any time by running `t config` or `termax config`.
 
 
-#### Ask Commands
+### Ask Commands
 
 You can start using Termax by asking using command `t` or `termax`, for example:
 
@@ -47,14 +47,17 @@ Here is a more complex example:
 
 ![](docs/ask_cmd.gif)
 
-#### Guess Commands (experimental)
+### Guess Commands (experimental)
 
-Termax can predict your next move based on your command history —just try `t guess` or `termax guess` to generate a suggested
+Termax can predict your next move based on your command history, workspace information, and so on — just try `t guess` or `termax guess` to generate a suggested
 command. It's not only smart, it's fun!
 
 ```bash
 t guess
 ```
+
+![](docs/guess.gif)
+
 
 ## Shell Plugin
 
