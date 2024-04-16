@@ -16,6 +16,7 @@ class Prompt:
         # TODO: make the sync of system related metadata once happened at the initialization
         self.system_metadata = get_system_metadata()
         self.path_metadata = get_path_metadata()
+        self.command_history = get_command_history()
 
         # share the same memory instance.
         if memory is None:
