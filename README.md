@@ -24,7 +24,7 @@ pip install termax
 
 ## Quick Start
 
-After installation, you'll need to configure the LLM. A setup guide will automatically launch the first time you use
+After installation, you'll need to configure the LLM (e.g., setup the OpenAI API Key). A setup guide will automatically launch the first time you use
 Termax. Alternatively, you can manually initiate configuration at any time by running `t config` or `termax config`.
 
 #### Ask Commands
