@@ -1,11 +1,11 @@
 # Termax
-
-<p align="center"> <img src="doc/icon.svg" alt="..." width=300>
-
 ![](https://github.com/huangyz0918/termax/actions/workflows/lint.yml/badge.svg) ![](https://github.com/huangyz0918/termax/actions/workflows/test.yml/badge.svg) ![PyPI - Version](https://img.shields.io/pypi/v/termax) 
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/termax) ![GitHub License](https://img.shields.io/github/license/huangyz0918/termax) 
 
 Termax is an LLM agent in your terminal that converts natural language to commands.
+
+![](doc/icon.svg)
+
 
 It is featured by:
 
