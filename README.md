@@ -36,6 +36,8 @@ You can start using Termax by asking using command `t` or `termax`:
 t show me the top-5 CPU processes
 ```
 
+![](doc/ask_cmd.gif)
+
 #### Guess Commands (experimental)
 
 Termax can predict your next move based on your command history—just try t guess or termax guess to generate a suggested command. It's not only smart, it's fun!
@@ -43,7 +45,6 @@ Termax can predict your next move based on your command history—just try t gue
 ```bash
 t guess
 ```
-
 
 ## Shell Plugin
 
@@ -54,6 +55,8 @@ t install -n <plugin>
 ```
 
 The `<plugin>` can be any of `zsh`, `bash`, or `fish`. With this plugin, you can directly convert natural language into commands using the Ctrl + K shortcut.
+
+![](doc/plugin.gif)
 
 You can also easily uninstall the plugin by
 
