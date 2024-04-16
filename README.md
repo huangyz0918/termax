@@ -29,7 +29,7 @@ Termax. Alternatively, you can manually initiate configuration at any time by ru
 
 #### Ask Commands
 
-You can start using Termax by asking using command `t` or `termax`:
+You can start using Termax by asking using command `t` or `termax`, for example:
 
 ```bash
 t show me the top-5 CPU processes
