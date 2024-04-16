@@ -21,6 +21,7 @@ class OpenAIModel(Model):
         spec = importlib.util.find_spec(dependency)
         if spec is not None:
             self.OpenAI = importlib.import_module(dependency).OpenAI
+            self.RateLimitError = importlib.import_module(dependency).RateLimitError
         else:
             raise ImportError(
                 "It seems you didn't install openai. In order to enable the OpenAI client related features, "
@@ -39,22 +40,29 @@ class OpenAIModel(Model):
             history (str): The history.
             prompt (str): The prompt.
         """
-        completion = self.client.chat.completions.create(
-            model=self.version,
-            messages=[
-                {
-                    "role": "system",
-                    "content": prompt
-                },
-                {
-                    "role": "user",
-                    "content": history,
-                }
-            ],
-            temperature=self.temperature
-        )
-        response = completion.choices[0].message.content
-        return extract_shell_commands(response)
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.version,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": prompt
+                    },
+                    {
+                        "role": "user",
+                        "content": history,
+                    }
+                ],
+                temperature=self.temperature
+            )
+            response = completion.choices[0].message.content
+            return extract_shell_commands(response)
+        except self.RateLimitError as e:
+            print("Rate limit exceeded. Please try again later.")
+            print(f"Error message: {e}")
+        except Exception as e:
+            print("OpenAI error occurred.")
+            print(f"Error message: {e}")
 
     def to_command(self, prompt, text):
         """
@@ -63,26 +71,33 @@ class OpenAIModel(Model):
             prompt (str): The prompt.
             text (str): The text.
         """
-        chat_history = [
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": text}
-        ]
+        try:
+            chat_history = [
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": text}
+            ]
 
-        completion = self.client.chat.completions.create(
-            model=self.version,
-            messages=chat_history,
-            temperature=self.temperature,
-            functions=get_all_function_schemas()
-        )
+            completion = self.client.chat.completions.create(
+                model=self.version,
+                messages=chat_history,
+                temperature=self.temperature,
+                functions=get_all_function_schemas()
+            )
 
-        function = completion.choices[0].message.function_call
-        if function:
-            for f in get_all_functions():
-                if f.openai_schema["name"] == function.name:
-                    return f.execute(**json.loads(function.arguments))
-        else:
-            response = completion.choices[0].message.content
-            return extract_shell_commands(response)
+            function = completion.choices[0].message.function_call
+            if function:
+                for f in get_all_functions():
+                    if f.openai_schema["name"] == function.name:
+                        return f.execute(**json.loads(function.arguments))
+            else:
+                response = completion.choices[0].message.content
+                return extract_shell_commands(response)
+        except self.RateLimitError as e:
+            print("Rate limit exceeded. Please try again later.")
+            print(f"Error message: {e}")
+        except Exception as e:
+            print("OpenAI error occurred.")
+            print(f"Error message: {e}")
 
     def to_description(self, prompt, command):
         """

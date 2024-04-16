@@ -171,7 +171,9 @@ def generate(text, print_cmd=False):
         # loop until the generated command is not ''.
         while True:
             command = model.to_command(prompt.gen_commands(text), text)
-            if command != '':
+            if not command:
+                return
+            elif command != '':
                 if not command.startswith('t ') and not command.startswith('termax '):
                     break
                 else:
