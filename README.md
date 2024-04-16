@@ -1,5 +1,6 @@
 
-
+<br/>
+<p align="center"> <img src="doc/icon.svg" alt="..." width=160>
 
 # Termax
 
@@ -9,8 +10,7 @@
 
 Termax is an LLM agent in your terminal that converts natural language to commands.
 
-<br/>
-<p align="center"> <img src="doc/icon.svg" alt="..." width=160>
+
 
 It is featured by:
 
