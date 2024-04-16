@@ -39,9 +39,24 @@ Termax can predict your next move based on your command history—just try t gue
 t guess
 ```
 
-#### Display the History
 
-We fetch system information to enhance the accuracy of command generation prompts, allowing the LLM to tailor commands more effectively. You can check the RAG information by `t rag` or `termax rag`.
+## Plugin
+
+We provided support for various shells like `bash`, `zsh` and `fish`. You can choose to install the plugins by
+
+```bash
+t install -n <plugin>
+```
+
+The <plugin> can be used with `zsh`, `bash`, or `fish`. With this plugin, you can directly convert natural language into commands using the Ctrl + K shortcut.
+
+You can also easily uninstall the plugin by
+
+```bash
+t uninstall -n <plugin>
+```
+
+Remember to source your shell or restart it after installing or uninstalling plugins to apply changes.
 
 
 ## Contributing 
