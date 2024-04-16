@@ -1,6 +1,6 @@
 # </p> Termax
 
-<p align="center"> <img src="doc/icon.svg" alt="..." width=500>
+<p align="center"> <img src="doc/icon.svg" alt="..." width=250>
 
 Termax is an LLM agent in your terminal to make your life easier.
 
