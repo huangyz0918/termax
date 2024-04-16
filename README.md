@@ -55,7 +55,7 @@ t install -n <plugin>
 ```
 
 The `<plugin>` can be any of `zsh`, `bash`, or `fish`. With this plugin, you can directly convert natural language into
-commands using the Ctrl + K shortcut.
+commands using the `Ctrl + K` shortcut.
 
 ![](docs/plugin.gif)
 
