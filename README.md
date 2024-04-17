@@ -1,7 +1,7 @@
 # Termax
 
 ![](https://github.com/huangyz0918/termax/actions/workflows/lint.yml/badge.svg) ![](https://github.com/huangyz0918/termax/actions/workflows/test.yml/badge.svg) ![PyPI - Version](https://img.shields.io/pypi/v/termax)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/termax)
+[![Downloads](https://static.pepy.tech/badge/termax)](https://pepy.tech/project/termax)
 
 Termax is an LLM agent in your terminal that converts natural language to commands.
 
