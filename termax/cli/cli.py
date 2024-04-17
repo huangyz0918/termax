@@ -6,7 +6,6 @@ from .utils import *
 from termax.utils.const import *
 from termax.prompt import Prompt, Memory
 from termax.plugin import install_plugin, uninstall_plugin
-from termax.utils.metadata import get_command_history
 from termax.utils import Config, CONFIG_PATH, qa_confirm
 
 memory = Memory()
@@ -105,7 +104,6 @@ def guess():
         prompt_guess = prompt.gen_suggestions(intent)
         command = model.guess_command(related_history, prompt_guess)
         if not command: return
-
 
     if config_dict['general']['show_command'] == "True":
         console.log(command, style="purple")
