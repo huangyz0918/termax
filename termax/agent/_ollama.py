@@ -2,7 +2,7 @@ import json
 import importlib.util
 
 from .types import Model
-from termax.prompt import extract_shell_commands
+from termax.prompt import extract_shell_commands, is_url
 from termax.function import get_all_function_schemas, get_all_functions
 
 
@@ -31,7 +31,10 @@ class OllamaModel(Model):
             )
 
         self.version = version
-        self.client = self.Client(host=host_url)
+        if is_url(host_url):
+            self.client = self.Client(host=host_url)
+        else:
+            self.client = self.Client()
 
     def guess_command(self, history, prompt):
         """

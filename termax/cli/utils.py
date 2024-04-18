@@ -37,11 +37,11 @@ def load_model():
     if platform == CONFIG_SEC_OPENAI:
         model = OpenAIModel(
             api_key=config_dict['openai'][CONFIG_SEC_API_KEY], version=config_dict['openai']['model'],
-            temperature=float(config_dict['openai']['temperature'])
+            temperature=float(config_dict['openai']['temperature']), base_url=config_dict['openai']['base_url']
         )
     elif platform == CONFIG_SEC_OLLAMA:
         model = OllamaModel(
-            host_url=config_dict['ollama'][CONFIG_SEC_API_KEY], version=config_dict['ollama']['model'],
+            host_url=config_dict['ollama']['host_url'], version=config_dict['ollama']['model'],
         )
     elif platform == CONFIG_SEC_GEMINI:
         model = GeminiModel(

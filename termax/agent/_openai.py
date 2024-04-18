@@ -2,12 +2,12 @@ import json
 import importlib.util
 
 from .types import Model
-from termax.prompt import extract_shell_commands
+from termax.prompt import extract_shell_commands, is_url
 from termax.function import get_all_function_schemas, get_all_functions
 
 
 class OpenAIModel(Model):
-    def __init__(self, api_key, version, temperature):
+    def __init__(self, api_key, version, temperature, base_url):
         """
         Initialize the OpenAI model.
         Args:
@@ -31,7 +31,10 @@ class OpenAIModel(Model):
 
         self.version = version
         self.temperature = temperature
-        self.client = self.OpenAI(api_key=api_key)
+        if is_url(base_url):
+            self.client = self.OpenAI(api_key=api_key, base_url=base_url)
+        else:
+            self.client = self.OpenAI(api_key=api_key)
 
     def guess_command(self, history, prompt):
         """
