@@ -81,7 +81,6 @@ class Prompt:
                 6. Invisible directories under the current directory: {self.files['invisible_directory']}
                 
                 Here are some similar commands generated before:
-                
                 {sample_string}
                 """
             )
@@ -117,7 +116,6 @@ class Prompt:
                 6. Invisible directories under the current directory: {self.files['invisible_directory']}
                 
                 Here are some similar commands generated before:
-                
                 {sample_string}
                 
                 The output shell commands is (please replace the `{{commands}}` with the actual commands):
