@@ -1,9 +1,7 @@
-import json
 import importlib.util
 
 from .types import Model
 from termax.prompt import extract_shell_commands, is_url
-from termax.function import get_all_function_schemas, get_all_functions
 
 
 class OllamaModel(Model):
@@ -13,7 +11,6 @@ class OllamaModel(Model):
         Args:
             host_url (str): The Ollama Host url.
             version (str): The model version.
-            temperature (float): The temperature value.
         """
         super().__init__()
 
@@ -74,7 +71,7 @@ class OllamaModel(Model):
                 {"role": "system", "content": prompt},
                 {"role": "user", "content": text}
             ]
-            
+
             completion = self.client.chat(
                 model=self.version,
                 messages=chat_history,

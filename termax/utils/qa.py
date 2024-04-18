@@ -70,7 +70,6 @@ def qa_platform(model_list: dict = CONFIG_LLM_LIST):
         return None
 
 
-
 def qa_general(model_list: dict = CONFIG_LLM_LIST):
     """
     qa_general: ask the user to input the general configuration.
