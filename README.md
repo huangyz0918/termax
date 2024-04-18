@@ -3,7 +3,7 @@
 ![](https://github.com/huangyz0918/termax/actions/workflows/lint.yml/badge.svg) ![](https://github.com/huangyz0918/termax/actions/workflows/test.yml/badge.svg) [![Downloads](https://static.pepy.tech/badge/termax)](https://pepy.tech/project/termax) ![PyPI - Version](https://img.shields.io/pypi/v/termax)
 
 
-Termax is an LLM agent in your terminal that converts natural language to commands.
+Similar to GitHub [Copilot CLI](https://docs.github.com/en/copilot/github-copilot-in-the-cli/about-github-copilot-in-the-cli), Termax is a personal AI assistant in your terminal.
 
 <br/>
 <p align="center"> <img src="docs/icon_text.svg" alt="..." width=300>
