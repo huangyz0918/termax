@@ -80,7 +80,7 @@ def guess():
         build_config()
         config_dict = configuration.read()
 
-    model = load_model()
+    model, platform = load_model()
     # generate the commands from the model, and execute if auto_execute is True
     with console.status(f"[cyan]Guessing..."):
         # Filter and format history excluding certain commands
@@ -158,19 +158,22 @@ def generate(text, print_cmd=False):
         config_dict = configuration.read()
 
     # load the LLM model
-    model = load_model()
+    model, platform = load_model()
     # generate the commands from the model, and execute if auto_execute is True
     with console.status(f"[cyan]Generating..."):
         # loop until the generated command is not ''.
-        while True:
-            command = model.to_command(prompt.gen_commands(text), text)
-            if not command:
+        for i in range(3):
+            command = model.to_command(prompt.gen_commands(text, platform), text)
+            if command == None:
                 return
             elif command != '':
                 if not command.startswith('t ') and not command.startswith('termax '):
                     break
                 else:
                     text = text + ", do not use command t or termax."
+            if i == 2:
+                console.log("Unable to generate the command, please try again.")
+                return
 
     if print_cmd:
         print(command)

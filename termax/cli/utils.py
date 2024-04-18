@@ -102,7 +102,7 @@ def load_model():
     else:
         raise ValueError(f"Platform {platform} not supported.")
 
-    return model
+    return (model, platform)
 
 
 def execute_command(command: str) -> bool:

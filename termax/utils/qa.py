@@ -28,7 +28,7 @@ def qa_platform(model_list: dict = CONFIG_LLM_LIST):
         other_questions = [
             inquirer.Text(
                 'host_url' if selected_platform == 'Ollama' else CONFIG_SEC_API_KEY,
-                message=f"What is your {selected_platform} HOST url" if selected_platform == 'Ollama' else f"What is your {selected_platform} API key",
+                message=f"[OPTIONAL] What is your {selected_platform} HOST url" if selected_platform == 'Ollama' else f"What is your {selected_platform} API key",
             ),
             inquirer.Text(
                 'model',
