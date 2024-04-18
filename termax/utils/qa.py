@@ -28,7 +28,8 @@ def qa_platform(model_list: dict = CONFIG_LLM_LIST):
         other_questions = [
             inquirer.Text(
                 'host_url' if selected_platform == 'Ollama' else CONFIG_SEC_API_KEY,
-                message=f"[OPTIONAL] What is your {selected_platform} HOST url" if selected_platform == 'Ollama' else f"What is your {selected_platform} API key",
+                message=f"[OPTIONAL] What is your {selected_platform} HOST url"
+                if selected_platform == 'Ollama' else f"What is your {selected_platform} API key"
             ),
             inquirer.Text(
                 'model',
@@ -41,7 +42,7 @@ def qa_platform(model_list: dict = CONFIG_LLM_LIST):
             other_questions.append(
                 inquirer.Text(
                     'base_url',
-                    message=f"[OPTIONAL] What is the base url for {selected_platform}",
+                    message=f"[OPTIONAL] What is the base url for {selected_platform}"
                 )
             )
 
@@ -62,7 +63,7 @@ def qa_platform(model_list: dict = CONFIG_LLM_LIST):
             'candidate_count': 1,
             'api_key': answers.get(CONFIG_SEC_API_KEY) if selected_platform != 'Ollama' else 'None',
             'host_url': answers.get('host_url') if selected_platform == 'Ollama' else 'None',
-            'base_url': answers.get('base_url') if selected_platform == 'OpenAI' else 'None',
+            'base_url': answers.get('base_url') if selected_platform == 'OpenAI' else 'None'
         }
 
         return config_dict

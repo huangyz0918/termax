@@ -32,18 +32,18 @@ def load_model():
     """
     configuration = Config()
     config_dict = configuration.read()
-    platform = config_dict['general']['platform']
+    plat = config_dict['general']['platform']
 
-    if platform == CONFIG_SEC_OPENAI:
+    if plat == CONFIG_SEC_OPENAI:
         model = OpenAIModel(
             api_key=config_dict['openai'][CONFIG_SEC_API_KEY], version=config_dict['openai']['model'],
             temperature=float(config_dict['openai']['temperature']), base_url=config_dict['openai']['base_url']
         )
-    elif platform == CONFIG_SEC_OLLAMA:
+    elif plat == CONFIG_SEC_OLLAMA:
         model = OllamaModel(
             host_url=config_dict['ollama']['host_url'], version=config_dict['ollama']['model'],
         )
-    elif platform == CONFIG_SEC_GEMINI:
+    elif plat == CONFIG_SEC_GEMINI:
         model = GeminiModel(
             api_key=config_dict['gemini'][CONFIG_SEC_API_KEY], version=config_dict['gemini']['model'],
             generation_config={
@@ -56,7 +56,7 @@ def load_model():
                 'max_output_tokens': config_dict['gemini']['max_tokens']
             }
         )
-    elif platform == CONFIG_SEC_CLAUDE:
+    elif plat == CONFIG_SEC_CLAUDE:
         model = ClaudeModel(
             api_key=config_dict['claude'][CONFIG_SEC_API_KEY], version=config_dict['claude']['model'],
             generation_config={
@@ -68,7 +68,7 @@ def load_model():
                 'max_tokens': config_dict['claude']['max_tokens']
             }
         )
-    elif platform == CONFIG_SEC_QIANFAN:
+    elif plat == CONFIG_SEC_QIANFAN:
         model = QianFanModel(
             api_key=config_dict['qianfan'][CONFIG_SEC_API_KEY], secret_key=config_dict['qianfan']['secret_key'],
             version=config_dict['qianfan']['model'],
@@ -78,7 +78,7 @@ def load_model():
                 'max_output_tokens': config_dict['qianfan']['max_tokens']
             }
         )
-    elif platform == CONFIG_SEC_MISTRAL:
+    elif plat == CONFIG_SEC_MISTRAL:
         model = MistralModel(
             api_key=config_dict['mistral'][CONFIG_SEC_API_KEY], version=config_dict['mistral']['model'],
             generation_config={
@@ -87,7 +87,7 @@ def load_model():
                 'max_tokens': config_dict['mistral']['max_tokens']
             }
         )
-    elif platform == CONFIG_SEC_QIANWEN:
+    elif plat == CONFIG_SEC_QIANWEN:
         model = QianWenModel(
             api_key=config_dict['qianwen'][CONFIG_SEC_API_KEY], version=config_dict['qianwen']['model'],
             generation_config={
@@ -100,9 +100,9 @@ def load_model():
             }
         )
     else:
-        raise ValueError(f"Platform {platform} not supported.")
+        raise ValueError(f"Platform {plat} not supported.")
 
-    return (model, platform)
+    return model, plat
 
 
 def execute_command(command: str) -> bool:
