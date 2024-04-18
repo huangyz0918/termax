@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlparse
 
 
 def extract_code_from_markdown(markdown_text, separator="\n\n"):
@@ -62,3 +63,21 @@ def remove_quotes(input_string):
     # The pattern looks for quotes at the start (^["']+) and end (["']+$) of the string and removes them
     modified_string = re.sub(r'^["\']+|["\']+$', '', input_string)
     return modified_string
+
+
+def is_url(string):
+    """
+    Check if a string is a valid URL.
+
+    Args:
+    - string (str): The string to check.
+
+    Returns:
+    - bool: True if the string is a valid URL, False otherwise.
+    """
+    try:
+        result = urlparse(string)
+        # Check if the parsing succeeded and scheme and netloc are present
+        return all([result.scheme, result.netloc])
+    except ValueError:
+        return False

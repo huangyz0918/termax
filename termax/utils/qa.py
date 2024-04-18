@@ -10,39 +10,65 @@ def qa_platform(model_list: dict = CONFIG_LLM_LIST):
         model_list: the list of models.
     """
     try:
-        first_questions = [
+        # Prompt for platform selection
+        platform_question = [
             inquirer.List(
                 "platform",
-                message="What LLM (platform) are you setting?",
+                message="What LLM (platform) are you setting",
                 choices=model_list.keys()
             )
         ]
-        answers_1 = inquirer.prompt(first_questions)
-        selected_platform = answers_1['platform']
+        platform_answer = inquirer.prompt(platform_question)
+        if not platform_answer:
+            return None
 
-        second_questions = [
+        selected_platform = platform_answer['platform']
+
+        # Setup questions based on the selected platform
+        other_questions = [
             inquirer.Text(
-                CONFIG_SEC_API_KEY,
-                message=f"What is your {selected_platform} API key?",
+                'host_url' if selected_platform == 'Ollama' else CONFIG_SEC_API_KEY,
+                message=f"[OPTIONAL] What is your {selected_platform} HOST url" if selected_platform == 'Ollama' else f"What is your {selected_platform} API key",
+            ),
+            inquirer.Text(
+                'model',
+                message=f"Which model are you using for {selected_platform}",
+                default=model_list[selected_platform]
             )
         ]
-        answers_2 = inquirer.prompt(second_questions)
-        if answers_2:
-            return {
-                "model": model_list[selected_platform],
-                "platform": selected_platform.lower(),
-                "api_key": answers_2[CONFIG_SEC_API_KEY],
-                'temperature': 0.7,
-                'max_tokens': 1500,
-                'top_p': 1.0,
-                'top_k': 32,
-                'stop_sequences': 'None',
-                'candidate_count': 1
-            }
-        else:
+
+        if selected_platform == 'OpenAI':
+            other_questions.append(
+                inquirer.Text(
+                    'base_url',
+                    message=f"[OPTIONAL] What is the base url for {selected_platform}",
+                )
+            )
+
+        # Gather responses to other questions
+        answers = inquirer.prompt(other_questions)
+        if not answers:
             return None
+
+        # Configuration dictionary
+        config_dict = {
+            'platform': selected_platform.lower(),
+            'model': answers['model'],
+            'temperature': 0.7,
+            'max_tokens': 1500,
+            'top_p': 1.0,
+            'top_k': 32,
+            'stop_sequences': 'None',
+            'candidate_count': 1,
+            'api_key': answers.get(CONFIG_SEC_API_KEY) if selected_platform != 'Ollama' else 'None',
+            'host_url': answers.get('host_url') if selected_platform == 'Ollama' else 'None',
+            'base_url': answers.get('base_url') if selected_platform == 'OpenAI' else 'None',
+        }
+
+        return config_dict
     except TypeError:
         return None
+
 
 
 def qa_general(model_list: dict = CONFIG_LLM_LIST):

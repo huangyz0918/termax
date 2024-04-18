@@ -85,6 +85,7 @@ class Config:
         @param platform: the platform to configure.
 
         """
+        del config_dict['platform']
         # create the configuration to connect with OpenAI.
         if not self.config.has_section(platform):
             self.config.add_section(platform)

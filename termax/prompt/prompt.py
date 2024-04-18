@@ -246,7 +246,6 @@ class Prompt:
                 The user's system PATH information (in dict format): {self.path_metadata}
                 
                 Here are some similar commands generated before:
-                
                 {sample_string}
                 """
             )
@@ -254,26 +253,34 @@ class Prompt:
             # TODO: add more models specific prompt
             return textwrap.dedent(
                 f"""\
-                You are an shell expert, you can convert this text to shell commands.
+                You are an shell expert, you can convert natural language text from user to shell commands.
                 
-                1. Please provide only shell commands for os without any description.
+                1. Please provide only shell commands for os without any extra description.
                 2. Ensure the output is a valid shell command.
                 3. If multiple steps required try to combine them together.
                 
                 Here are some rules you need to follow:
-                
+
                 1. The commands should be able to run on the current system according to the system information.
                 2. The files in the commands should be available in the path, according to the path information.
                 3. The CLI application should be installed in the system (check the path information).
-                
-                Here are some information you may need to know:
 
-                Current system information (in dict format): {self.system_metadata}
+                Here are some information you may need to know:
                 
-                The user's system PATH information (in dict format): {self.path_metadata}
+                [INFORMATION] The user's current system information:
+                1. OS: {self.system_metadata['platform']}
+                2. OS Version: {self.system_metadata['platform_version']}
+                3. Architecture: {self.system_metadata['architecture']}
+                
+                [INFORMATION] The user's current PATH information:
+                1. User: {self.path_metadata['user']}
+                2. Current PATH: {self.path_metadata['current_directory']}
+                3. Files under the current directory: {self.files['files']}
+                4. Directories under the current directory: {self.files['directory']}
+                5. Invisible files under the current directory: {self.files['invisible_files']}
+                6. Invisible directories under the current directory: {self.files['invisible_directory']}
                 
                 Here are some similar commands generated before:
-
                 {sample_string}
                 
                 The output shell commands is (please replace the `{{commands}}` with the actual commands):
