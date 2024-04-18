@@ -3,7 +3,7 @@ import platform
 import subprocess
 
 from termax.prompt import Memory
-from termax.agent import OpenAIModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
+from termax.agent import OpenAIModel, OllamaModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
 from termax.utils import Config, qa_general, qa_platform
 from termax.utils.const import *
 
@@ -38,6 +38,10 @@ def load_model():
         model = OpenAIModel(
             api_key=config_dict['openai'][CONFIG_SEC_API_KEY], version=config_dict['openai']['model'],
             temperature=float(config_dict['openai']['temperature'])
+        )
+    elif platform == CONFIG_SEC_OLLAMA:
+        model = OllamaModel(
+            host_url=config_dict['ollama'][CONFIG_SEC_API_KEY], version=config_dict['ollama']['model'],
         )
     elif platform == CONFIG_SEC_GEMINI:
         model = GeminiModel(

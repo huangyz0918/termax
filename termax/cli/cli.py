@@ -159,7 +159,6 @@ def generate(text, print_cmd=False):
 
     # load the LLM model
     model = load_model()
-
     # generate the commands from the model, and execute if auto_execute is True
     with console.status(f"[cyan]Generating..."):
         # loop until the generated command is not ''.

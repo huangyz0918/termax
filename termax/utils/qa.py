@@ -13,23 +13,28 @@ def qa_platform(model_list: dict = CONFIG_LLM_LIST):
         first_questions = [
             inquirer.List(
                 "platform",
-                message="What LLM (platform) are you setting?",
+                message="What LLM (platform) are you setting",
                 choices=model_list.keys()
             )
         ]
         answers_1 = inquirer.prompt(first_questions)
         selected_platform = answers_1['platform']
 
-        second_questions = [
+        other_questions = [
             inquirer.Text(
                 CONFIG_SEC_API_KEY,
-                message=f"What is your {selected_platform} API key?",
+                message=f"What is your {selected_platform} API key?" if selected_platform != 'Ollama' else f"What is your {selected_platform} HOST url",
+            ),
+            inquirer.Text(
+                'model',
+                message=f"Which model are you using for {selected_platform}",  
+                default=model_list[selected_platform]
             )
         ]
-        answers_2 = inquirer.prompt(second_questions)
+        answers_2 = inquirer.prompt(other_questions)
         if answers_2:
             return {
-                "model": model_list[selected_platform],
+                "model": answers_2['model'],
                 "platform": selected_platform.lower(),
                 "api_key": answers_2[CONFIG_SEC_API_KEY],
                 'temperature': 0.7,

@@ -2,6 +2,7 @@ CONFIG_SEC_GENERAL = 'general'
 CONFIG_SEC_API_KEY = 'api_key'
 CONFIG_LLM_LIST = {  # with the default model.
     'OpenAI': 'gpt-3.5-turbo',
+    'Ollama': 'llama2',
     'Gemini': 'gemini-pro',
     'Claude': 'claude-3-opus-20240229',
     'Mistral': 'mistral-small-latest',
@@ -16,6 +17,7 @@ DB_SYS_METRICS = 'system'
 
 # LLMs
 CONFIG_SEC_OPENAI = 'openai'
+CONFIG_SEC_OLLAMA = 'ollama'
 CONFIG_SEC_GEMINI = 'gemini'
 CONFIG_SEC_CLAUDE = 'claude'
 CONFIG_SEC_MISTRAL = 'mistral'
