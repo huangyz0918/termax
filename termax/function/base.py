@@ -2,6 +2,7 @@ from .openai import MacFunction, ShellFunction, WinFunction
 
 import sys
 
+
 def get_all_function_schemas():
     """
     Get all function schemas.
@@ -19,4 +20,4 @@ def get_all_functions():
     """
     if sys.platform.startswith('linux') or sys.platform == 'darwin':
         return [MacFunction, ShellFunction]  # TODO: load all modules dynamically
-    return [WinFunction, ShellFunction] 
+    return [WinFunction, ShellFunction]
