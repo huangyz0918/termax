@@ -1,7 +1,6 @@
 import re
 import os
 import sys
-import pwd
 import psutil
 import socket
 import shutil
@@ -306,6 +305,7 @@ def get_command_history():
     """
     if sys.platform.startswith('linux') or sys.platform == 'darwin':
         # Attempt to detect the default shell from the $SHELL environment variable or /etc/passwd
+        import pwd
         shell = os.environ.get('SHELL', pwd.getpwnam(getpass.getuser()).pw_shell)
 
         if 'bash' in shell:
