@@ -17,7 +17,6 @@ class Prompt:
         self.system_metadata = get_system_metadata()
         self.path_metadata = get_path_metadata()
         self.command_history = get_command_history()
-        self.files = get_file_metadata()
 
         # share the same memory instance.
         if memory is None:
@@ -31,6 +30,7 @@ class Prompt:
         Args:
             model: the model to use, default is OpenAI.
         """
+        files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:
             return textwrap.dedent(
                 f"""\
@@ -49,10 +49,10 @@ class Prompt:
                 
                 1. User: {self.path_metadata['user']}
                 2. Current PATH: {self.path_metadata['current_directory']}
-                3. Files under the current directory: {self.files['files']}
-                4. Directories under the current directory: {self.files['directory']}
-                5. Invisible files under the current directory: {self.files['invisible_files']}
-                6. Invisible directories under the current directory: {self.files['invisible_directory']}
+                3. Files under the current directory: {files['files']}
+                4. Directories under the current directory: {files['directory']}
+                5. Invisible files under the current directory: {files['invisible_files']}
+                6. Invisible directories under the current directory: {files['invisible_directory']}
 
                 [INFORMATION] The current time: {datetime.now().isoformat()}
 
@@ -83,10 +83,10 @@ class Prompt:
                 
                 1. User: {self.path_metadata['user']}
                 2. Current PATH: {self.path_metadata['current_directory']}
-                3. Files under the current directory: {self.files['files']}
-                4. Directories under the current directory: {self.files['directory']}
-                5. Invisible files under the current directory: {self.files['invisible_files']}
-                6. Invisible directories under the current directory: {self.files['invisible_directory']}
+                3. Files under the current directory: {files['files']}
+                4. Directories under the current directory: {files['directory']}
+                5. Invisible files under the current directory: {files['invisible_files']}
+                6. Invisible directories under the current directory: {files['invisible_directory']}
                 
                 [INFORMATION] The current time: {datetime.now().isoformat()}
 
@@ -115,6 +115,7 @@ class Prompt:
         else:
             primary_data = 'None'
 
+        files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:
             return textwrap.dedent(
                 f"""\
@@ -131,10 +132,10 @@ class Prompt:
 
                 1. User: {self.path_metadata['user']}
                 2. Current PATH: {self.path_metadata['current_directory']}
-                3. Files under the current directory: {self.files['files']}
-                4. Directories under the current directory: {self.files['directory']}
-                5. Invisible files under the current directory: {self.files['invisible_files']}
-                6. Invisible directories under the current directory: {self.files['invisible_directory']}
+                3. Files under the current directory: {files['files']}
+                4. Directories under the current directory: {files['directory']}
+                5. Invisible files under the current directory: {files['invisible_files']}
+                6. Invisible directories under the current directory: {files['invisible_directory']}
                 
                 [INFORMATION] The current time: {datetime.now().isoformat()}
 
@@ -167,10 +168,10 @@ class Prompt:
 
                 1. User: {self.path_metadata['user']}
                 2. Current PATH: {self.path_metadata['current_directory']}
-                3. Files under the current directory: {self.files['files']}
-                4. Directories under the current directory: {self.files['directory']}
-                5. Invisible files under the current directory: {self.files['invisible_files']}
-                6. Invisible directories under the current directory: {self.files['invisible_directory']}
+                3. Files under the current directory: {files['files']}
+                4. Directories under the current directory: {files['directory']}
+                5. Invisible files under the current directory: {files['invisible_files']}
+                6. Invisible directories under the current directory: {files['invisible_directory']}
 
                 [INFORMATION] The current time: {datetime.now().isoformat()}
                 
@@ -223,6 +224,7 @@ class Prompt:
             """
 
         # refresh the metadata
+        files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:
             return textwrap.dedent(
                 f"""\
@@ -248,10 +250,10 @@ class Prompt:
                 [INFORMATION] The user's current PATH information:
                 1. User: {self.path_metadata['user']}
                 2. Current PATH: {self.path_metadata['current_directory']}
-                3. Files under the current directory: {self.files['files']}
-                4. Directories under the current directory: {self.files['directory']}
-                5. Invisible files under the current directory: {self.files['invisible_files']}
-                6. Invisible directories under the current directory: {self.files['invisible_directory']}
+                3. Files under the current directory: {files['files']}
+                4. Directories under the current directory: {files['directory']}
+                5. Invisible files under the current directory: {files['invisible_files']}
+                6. Invisible directories under the current directory: {files['invisible_directory']}
     
                 Here are some similar commands generated before:
                 {sample_string}
@@ -287,10 +289,10 @@ class Prompt:
                 [INFORMATION] The user's current PATH information:
                 1. User: {self.path_metadata['user']}
                 2. Current PATH: {self.path_metadata['current_directory']}
-                3. Files under the current directory: {self.files['files']}
-                4. Directories under the current directory: {self.files['directory']}
-                5. Invisible files under the current directory: {self.files['invisible_files']}
-                6. Invisible directories under the current directory: {self.files['invisible_directory']}
+                3. Files under the current directory: {files['files']}
+                4. Directories under the current directory: {files['directory']}
+                5. Invisible files under the current directory: {files['invisible_files']}
+                6. Invisible directories under the current directory: {files['invisible_directory']}
                 
                 Here are some similar commands generated before:
                 {sample_string}
