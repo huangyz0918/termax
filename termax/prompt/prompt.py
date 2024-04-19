@@ -224,6 +224,7 @@ class Prompt:
             """
 
         # refresh the metadata
+        files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:
             return textwrap.dedent(
                 f"""\
@@ -241,12 +242,25 @@ class Prompt:
 
                 Here are some information you may need to know:
                 
-                Current system information (in dict format): {self.system_metadata}
+                [INFORMATION] The user's current system information:
+                1. OS: {self.system_metadata['platform']}
+                2. OS Version: {self.system_metadata['platform_version']}
+                3. Architecture: {self.system_metadata['architecture']}
                 
-                The user's system PATH information (in dict format): {self.path_metadata}
-                
+                [INFORMATION] The user's current PATH information:
+                1. User: {self.path_metadata['user']}
+                2. Current PATH: {self.path_metadata['current_directory']}
+                3. Files under the current directory: {files['files']}
+                4. Directories under the current directory: {files['directory']}
+                5. Invisible files under the current directory: {files['invisible_files']}
+                6. Invisible directories under the current directory: {files['invisible_directory']}
+    
                 Here are some similar commands generated before:
                 {sample_string}
+
+                The output shell commands is (please replace the `{{commands}}` with the actual commands):
+
+                Commands: ${{commands}}
                 """
             )
         else:
@@ -275,10 +289,10 @@ class Prompt:
                 [INFORMATION] The user's current PATH information:
                 1. User: {self.path_metadata['user']}
                 2. Current PATH: {self.path_metadata['current_directory']}
-                3. Files under the current directory: {self.files['files']}
-                4. Directories under the current directory: {self.files['directory']}
-                5. Invisible files under the current directory: {self.files['invisible_files']}
-                6. Invisible directories under the current directory: {self.files['invisible_directory']}
+                3. Files under the current directory: {files['files']}
+                4. Directories under the current directory: {files['directory']}
+                5. Invisible files under the current directory: {files['invisible_files']}
+                6. Invisible directories under the current directory: {files['invisible_directory']}
                 
                 Here are some similar commands generated before:
                 {sample_string}
