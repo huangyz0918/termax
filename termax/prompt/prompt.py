@@ -255,6 +255,10 @@ class Prompt:
     
                 Here are some similar commands generated before:
                 {sample_string}
+
+                The output shell commands is (please replace the `{{commands}}` with the actual commands):
+
+                Commands: ${{commands}}
                 """
             )
         else:
