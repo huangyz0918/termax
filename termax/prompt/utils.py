@@ -49,6 +49,24 @@ def process_mac_script(text):
     return f"'{processed_text}'"
 
 
+def process_powershell_script(text):
+    """
+    Process a PowerShell script string to remove extra quotes and ensure it's wrapped within a single pair of double quotes.
+
+    Args:
+    - text (str): The input text potentially containing multiple quotes.
+
+    Returns:
+    - str: The processed text wrapped within double quotes.
+    """
+    processed_text = re.sub(r'^\s*powershell -Command\s*', '', text)
+    if (text.startswith('"') and text.endswith('"')) or (text.startswith("'") and text.endswith("'")):
+        processed_text = remove_quotes(text)
+    else:
+        processed_text = text
+    return f'"{processed_text}"'
+
+
 def remove_quotes(input_string):
     """
     Remove all single and double quotes from the beginning and end of the input string.

@@ -120,7 +120,7 @@ class Prompt:
             return textwrap.dedent(
                 f"""\
                 You are an shell expert, you need to infer the next command based on the provided list
-                 of command history entries.
+                of command history entries.
                 
                 [INFORMATION] The user's current system information:
                 
