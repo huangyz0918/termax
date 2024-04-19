@@ -115,7 +115,6 @@ class Prompt:
         else:
             primary_data = 'None'
 
-        files = get_file_metadata()
         if model == CONFIG_SEC_OPENAI:
             return textwrap.dedent(
                 f"""\
