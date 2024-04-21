@@ -66,8 +66,9 @@ Here is an example that Termax guesses my next move:
 
 ![](docs/guess.gif)
 
-⚠️ **Caution:** 
-- This feature automatically inserts the last 15 commands from your shell history into the LLM prompt. If your command history contains sensitive information, please refrain from using this feature to ensure your data remains secure.
+> [!WARNING]
+> 
+> This feature automatically inserts the last 15 commands from your shell history into the LLM prompt. If your command history contains sensitive information, please refrain from using this feature to ensure your data remains secure.
 
 
 ## Shell Plugin
