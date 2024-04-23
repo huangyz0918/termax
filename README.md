@@ -27,7 +27,7 @@ pip install termax
 > * After installation, you'll need to configure the LLM (e.g., set the [OpenAI API key](https://beta.openai.com/account/api-keys)).
 > * A setup guide will automatically launch the first time you use Termax. 
 > * Alternatively, you can manually initiate configuration at any time by running `t config` or `termax config`.
-> * Please read ℹ️ and ⚠️ under each feature before using to ensure your data safety.
+> * Please read ℹ️ and warnings under each feature before using to ensure your data safety.
 
 
 ### Ask Commands
@@ -50,7 +50,7 @@ Here is a more complex example:
 
 ℹ️ **Note:** Be aware of privacy implications. This feature collects the following info into LLM prompt.
 - **System Info:** os, hardware architecture
-- **Path Info:** username, current directory, files in directory
+- **Path Info:** username, current directory, file names in directory
 
 
 ### Guess Commands (experimental)
