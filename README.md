@@ -115,6 +115,14 @@ save = False
 > * For other LLMs than OpenAI, you need to install the client manually.
 > * We utilize [ChromaDB](trychroma.com) as the vector database. When using OpenAI, Termax calculates embeddings with OpenAI's `text-embedding-ada-002`. For other cases, we default to Chroma's built-in model.
 
+## Retrieval-Augmented Generation (RAG)
+
+<br/>
+<p align="center"> <img src="docs/rag.svg" alt="..." width=400>
+
+Our system utilizes a straightforward Retrieve and Generate (RAG) approach to enhance user experience continuously. Each time the command generation feature is used, Termax captures and stores a "successful example" in a local vector database. This "successful example" comprises the command that was successfully executed without errors, along with the user's description that prompted this command. These entries serve as valuable references for future command generations based on similar user descriptions.
+
+Additionally, we gather external information crucial for effective prompting engineering. This includes system details such as the operating system version and the structure of files in the current workspace. This data is essential for generating precise commands that are compatible with the user's current system environment and are pertinent to file management operations.
 
 ## Contributing
 
