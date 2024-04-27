@@ -33,32 +33,6 @@ class OllamaModel(Model):
         else:
             self.client = self.Client()
 
-    def guess_command(self, history, prompt):
-        """
-        Guess the command based on the prompt.
-        Args:
-            history (str): The history.
-            prompt (str): The prompt.
-        """
-        try:
-            chat_history = [
-                {"role": "system", "content": prompt},
-                {"role": "user", "content": history}
-            ]
-
-            completion = self.client.chat(
-                model=self.version,
-                messages=chat_history,
-            )
-
-            response = completion['message']['content']
-            return extract_shell_commands(response)
-        except self.ResponseError as e:
-            print(f"Ollama Error: {e.error}")
-        except Exception as e:
-            print("Ollama error occurred.")
-            print(f"Error message: {e}")
-
     def to_command(self, prompt, text):
         """
         Generate a command based on the prompt and text.

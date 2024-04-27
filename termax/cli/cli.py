@@ -6,7 +6,7 @@ from .utils import *
 from termax.utils.const import *
 from termax.prompt import Prompt, Memory
 from termax.plugin import install_plugin, uninstall_plugin
-from termax.utils import Config, CONFIG_PATH, qa_confirm
+from termax.utils import Config, CONFIG_PATH, qa_confirm, qa_action, qa_prompt, qa_revise
 
 memory = Memory()
 # avoid the tokenizers parallelism issue
@@ -66,7 +66,7 @@ def guess():
     console = Console()
     prompt = Prompt(memory)
     configuration = Config()
-
+    
     config_dict = configuration.read()
     if not configuration.config.has_section(CONFIG_SEC_GENERAL):
         click.echo(f"General section not found. Running config setup...")
@@ -81,46 +81,42 @@ def guess():
 
     model, platform = load_model()
     # generate the commands from the model, and execute if auto_execute is True
+    intent = qa_prompt()
     with console.status(f"[cyan]Guessing..."):
-        # Filter and format history excluding certain commands
-        initial_history = filter_and_format_history(
-            prompt.command_history["shell_command_history"],
-            lambda entry: entry['command'] not in ("t guess", "termax guess"),
-            COMMAND_HISTORY_COUNT
-        )
-        # Guess the intent based on the initial history
-        prompt_intent = prompt.intent_detect()
-        intent = model.guess_command(initial_history, prompt_intent)
-        if not intent: return
-
-        # Filter and format history including commands related to the guessed intent
-        related_history = filter_and_format_history(
-            prompt.command_history["shell_command_history"],
-            lambda entry: intent in entry['command'],
-            COMMAND_HISTORY_COUNT // 3
-        )
-
-        # Generate suggestions and guess the final command
-        prompt_guess = prompt.gen_suggestions(intent)
-        command = model.guess_command(related_history, prompt_guess)
-        if not command: return
-
-    if config_dict['general']['show_command'] == "True":
-        console.log(command, style="purple")
-
+        primary, description = intent['primary'], intent['description']
+        guess_prompt = prompt.gen_suggestions(primary, platform)
+        command = model.to_command(prompt=guess_prompt, text=description)
+    
+    click.echo(f"\nSuggestion:\n")
+    console.log(f"{command}\n", style="purple") if command else console.log("Suggestion not readily available. Please revise for better results.\n", style="purple")
     try:
-        if config_dict['general']['auto_execute'] == "True":
-            execute_command(command)
-        else:
-            choice = qa_confirm()
+        choice = qa_action() if command else 3
+        while True:
             if choice == 0:
-                execute_command(command)
-            elif choice == 2:
+                copy_success =  copy_command(command)
+                print("Command copied to clipboard.") if copy_success else print("Failed to copy the command.")
+                break
+            elif choice == 1:
                 with console.status(f"[cyan]Generating..."):
                     description = model.to_description(prompt.explain_commands(), command)
                 console.log(f"{description}")
+                break
+            elif choice == 2:
+                command_success = execute_command(command)
+                break
+            elif choice == 3:
+                description += f" Revised Command: {qa_revise()}"
+                command = model.to_command(prompt=guess_prompt, text=description)
+                click.echo()
+                console.log(f"{command}\n", style="purple")
+            else:
+                return
+            choice = qa_action()
     except KeyboardInterrupt:
-        pass
+        command_success = True
+    finally:
+        if choice == 2 and command_success:
+                save_command(command, description, config_dict, memory)
 
 
 @cli.command(default_command=True)

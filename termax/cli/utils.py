@@ -1,6 +1,7 @@
 import os
 import platform
 import subprocess
+import pyperclip
 
 from termax.prompt import Memory
 from termax.agent import OpenAIModel, OllamaModel, GeminiModel, ClaudeModel, QianFanModel, MistralModel, QianWenModel
@@ -163,3 +164,17 @@ def filter_and_format_history(command_history, filter_condition, max_count):
                         command_history if filter_condition(entry)][:max_count]
 
     return "Command History: \n" + "\n".join(filtered_history)
+
+
+def copy_command(command: str):
+    """
+    copy_command: copy the command to the clipboard.
+    Args:
+        command: the command to copy.
+    """
+    try:
+        pyperclip.copy(command)
+        return True
+    except pyperclip.PyperclipException:
+        return False
+

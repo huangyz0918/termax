@@ -36,37 +36,6 @@ class OpenAIModel(Model):
         else:
             self.client = self.OpenAI(api_key=api_key)
 
-    def guess_command(self, history, prompt):
-        """
-        Guess the command based on the prompt.
-        Args:
-            history (str): The history.
-            prompt (str): The prompt.
-        """
-        try:
-            completion = self.client.chat.completions.create(
-                model=self.version,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": prompt
-                    },
-                    {
-                        "role": "user",
-                        "content": history,
-                    }
-                ],
-                temperature=self.temperature
-            )
-            response = completion.choices[0].message.content
-            return extract_shell_commands(response)
-        except self.RateLimitError as e:
-            print("Rate limit exceeded. Please try again later.")
-            print(f"Error message: {e}")
-        except Exception as e:
-            print("OpenAI error occurred.")
-            print(f"Error message: {e}")
-
     def to_command(self, prompt, text):
         """
         Generate a command based on the prompt and text.
