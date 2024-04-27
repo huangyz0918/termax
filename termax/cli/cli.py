@@ -107,6 +107,7 @@ def guess():
             elif choice == 3:
                 description += f" Revised Command: {qa_revise()}"
                 command = model.to_command(prompt=guess_prompt, text=description)
+                click.echo()
                 console.log(f"{command}\n", style="purple")
             else:
                 return
