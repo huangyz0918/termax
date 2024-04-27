@@ -132,3 +132,65 @@ def qa_confirm():
         return answers["execute"]
     except TypeError:
         return None
+
+
+def qa_action():
+    """
+    qa_action: ask the user to choose the action to perform for guess output.
+    """
+    try:
+        action_questions = [
+            inquirer.List(
+                'action',
+                message="Select an option",
+                choices=[('Copy command to clipboard', 0), ('Explain command', 1), 
+                        ('Execute command', 2), ('Revise command', 3), ('Exit', 4)]
+            )
+        ]
+        answers = inquirer.prompt(action_questions)
+        return answers["action"]
+    except TypeError:
+        return None
+
+
+def qa_prompt():
+    """
+    qa_prompt: ask the user to input the prompt and intent.
+    """
+    try:
+        command_questions = [
+            inquirer.List(
+                'kind',
+                message="What kind of command can I help you with",
+                choices=[('generic shell command', 'shell'), ('git command', 'git'), ('docker command', 'docker')]
+            )
+        ]
+        command = inquirer.prompt(command_questions)
+        
+        intent_questions = [
+            inquirer.Text(
+                'description',
+                message="Describe your intent",
+            )
+        ]
+        intent = inquirer.prompt(intent_questions)
+        return {'primary' : command["kind"], 'description' : intent["description"]}
+    except TypeError:
+        return None
+
+
+def qa_revise():
+    """
+    qa_revise: ask the user to input the revised command.
+    """
+    try:
+        revise_questions = [
+            inquirer.Text(
+                'revise',
+                message="How to revise command",
+            )
+        ]
+        answers = inquirer.prompt(revise_questions)
+        return answers["revise"]
+    except TypeError:
+        return None
