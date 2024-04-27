@@ -143,8 +143,8 @@ def qa_action():
             inquirer.List(
                 'action',
                 message="Select an option",
-                choices=[('Copy command to clipboard', 0), ('Explain command', 1), 
-                        ('Execute command', 2), ('Revise command', 3), ('Exit', 4)]
+                choices=[('Copy command to clipboard', 0), ('Explain command', 1),
+                         ('Execute command', 2), ('Revise command', 3), ('Exit', 4)]
             )
         ]
         answers = inquirer.prompt(action_questions)
@@ -166,7 +166,7 @@ def qa_prompt():
             )
         ]
         command = inquirer.prompt(command_questions)
-        
+
         intent_questions = [
             inquirer.Text(
                 'description',
@@ -174,7 +174,7 @@ def qa_prompt():
             )
         ]
         intent = inquirer.prompt(intent_questions)
-        return {'primary' : command["kind"], 'description' : intent["description"]}
+        return {'primary': command["kind"], 'description': intent["description"]}
     except TypeError:
         return None
 

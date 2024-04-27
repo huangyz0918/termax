@@ -44,8 +44,8 @@ class Prompt:
         if model == CONFIG_SEC_OPENAI:
             return textwrap.dedent(
                 f"""\
-                You are an shell expert, you need to assist user to infer the next command based on 
-                user's given intent description.
+                You are an shell expert, you need to assist user to infer the next command based on
+                 user's given intent description.
                 
                 [INFORMATION] The user's current system information:
                 
@@ -80,8 +80,8 @@ class Prompt:
             # TODO: add more models specific prompt
             return textwrap.dedent(
                 f"""\
-                You are an shell expert, you need to assist user to infer the next command based on 
-                user's given intent description.
+                You are an shell expert, you need to assist user to infer the next command based on
+                 user's given intent description.
                 
                 [INFORMATION] The user's current system information:
                 
