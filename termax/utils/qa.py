@@ -175,6 +175,8 @@ def qa_prompt():
         ]
         intent = inquirer.prompt(intent_questions)
         return {'primary': command["kind"], 'description': intent["description"]}
+    except KeyboardInterrupt:
+        return None
     except TypeError:
         return None
 

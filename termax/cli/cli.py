@@ -66,7 +66,7 @@ def guess():
     console = Console()
     prompt = Prompt(memory)
     configuration = Config()
-    
+
     config_dict = configuration.read()
     if not configuration.config.has_section(CONFIG_SEC_GENERAL):
         click.echo(f"General section not found. Running config setup...")
@@ -82,18 +82,22 @@ def guess():
     model, platform = load_model()
     # generate the commands from the model, and execute if auto_execute is True
     intent = qa_prompt()
+    if intent is None:
+        return
+
     with console.status(f"[cyan]Guessing..."):
         primary, description = intent['primary'], intent['description']
         guess_prompt = prompt.gen_suggestions(primary, platform)
         command = model.to_command(prompt=guess_prompt, text=description)
-    
+
     click.echo(f"\nSuggestion:\n")
-    console.log(f"{command}\n", style="purple") if command else console.log("Suggestion not readily available. Please revise for better results.\n", style="purple")
+    console.log(f"{command}\n", style="purple") if command else console.log(
+        "Suggestion not readily available. Please revise for better results.\n", style="purple")
     try:
         choice = qa_action() if command else 3
         while True:
             if choice == 0:
-                copy_success =  copy_command(command)
+                copy_success = copy_command(command)
                 print("Command copied to clipboard.") if copy_success else print("Failed to copy the command.")
                 break
             elif choice == 1:
@@ -116,7 +120,7 @@ def guess():
         command_success = True
     finally:
         if choice == 2 and command_success:
-                save_command(command, description, config_dict, memory)
+            save_command(command, description, config_dict, memory)
 
 
 @cli.command(default_command=True)
