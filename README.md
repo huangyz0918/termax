@@ -53,22 +53,15 @@ Here is a more complex example:
 - **Path Info:** username, current directory, file names in directory
 
 
-### Guess Commands (experimental)
+### Guess Commands
 
-Termax can predict your next move based on your command history, workspace information, and so on — just try `t guess` or `termax guess` to generate a suggested
-command. It's not only smart, it's fun!
+Termax can generate a command suggestion like Github Copilot CLI:
 
 ```bash
 t guess
 ```
 
-Here is an example that Termax guesses my next move:
-
 ![](docs/guess.gif)
-
-> [!WARNING]
-> 
-> This feature automatically inserts the last 15 commands from your shell history into the LLM prompt. If your command history contains sensitive information, please refrain from using this feature to ensure your data remains secure.
 
 
 ## Shell Plugin
